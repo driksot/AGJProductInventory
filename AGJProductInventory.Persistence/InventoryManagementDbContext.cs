@@ -34,5 +34,12 @@ namespace AGJProductInventory.Persistence
 
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductVariation> ProductVariations { get; set; }
+        public DbSet<ProductInventory> ProductInventories { get; set; }
+        public DbSet<ProductInventorySnapshot> ProductInventorySnapshots { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<CustomerAddress> CustomerAddresses { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<InvoiceLineItem> InvoiceLineItems { get; set; }
     }
 }

@@ -10,5 +10,6 @@ namespace AGJProductInventory.Domain
         public bool IsArchived { get; set; }
         public Category Category { get; set; }
         public int CategoryId { get; set; }
+        public ICollection<ProductVariation> ProductVariations { get; set; }
     }
 }
