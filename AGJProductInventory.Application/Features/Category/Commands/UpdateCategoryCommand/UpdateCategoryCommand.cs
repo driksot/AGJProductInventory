@@ -6,6 +6,7 @@ namespace AGJProductInventory.Application.Features.Category.Commands.UpdateCateg
 {
     public class UpdateCategoryCommand : IRequest<Unit>
     {
+        public int Id { get; set; }
         public UpdateCategoryDTO CategoryDTO { get; set; }
     }
 
@@ -27,7 +28,7 @@ namespace AGJProductInventory.Application.Features.Category.Commands.UpdateCateg
 
             if (!validationResult.IsValid) throw new Exception(); // TODO: create validation exception
 
-            var category = await _categoryRepository.Get(request.CategoryDTO.Id);
+            var category = await _categoryRepository.Get(request.Id);
 
             _mapper.Map(request.CategoryDTO, category);
 

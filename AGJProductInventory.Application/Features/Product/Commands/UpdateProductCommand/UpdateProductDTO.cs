@@ -1,6 +1,8 @@
-﻿namespace AGJProductInventory.Application.Common
+﻿using AGJProductInventory.Application.Common;
+
+namespace AGJProductInventory.Application.Features.Product.Commands.UpdateProductCommand
 {
-    public interface IProductDTO
+    public class UpdateProductDTO : IProductDTO
     {
         public string Name { get; set; }
         public string Description { get; set; }

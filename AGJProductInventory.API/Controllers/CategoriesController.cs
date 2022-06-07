@@ -4,6 +4,7 @@ using AGJProductInventory.Application.Features.Category.Commands.DeleteCategoryC
 using AGJProductInventory.Application.Features.Category.Commands.UpdateCategoryCommand;
 using AGJProductInventory.Application.Features.Category.Queries.GetCategoriesListQuery;
 using AGJProductInventory.Application.Features.Category.Queries.GetCategoryDetailQuery;
+using AGJProductInventory.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,7 +41,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<CategoriesController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse>> Post([FromBody] CreateCategoryDTO categoryDTO)
+        public async Task<ActionResult<BaseCommandResponse<Category>>> Post([FromBody] CreateCategoryDTO categoryDTO)
         {
             var command = new CreateCategoryCommand { CategoryDTO = categoryDTO };
             var response = await _mediator.Send(command);

@@ -1,6 +1,8 @@
-﻿namespace AGJProductInventory.Application.Common
+﻿using AGJProductInventory.Application.Common;
+
+namespace AGJProductInventory.Application.Features.Product.Commands.CreateProductCommand
 {
-    public interface IProductDTO
+    public class CreateProductDTO : IProductDTO
     {
         public string Name { get; set; }
         public string Description { get; set; }

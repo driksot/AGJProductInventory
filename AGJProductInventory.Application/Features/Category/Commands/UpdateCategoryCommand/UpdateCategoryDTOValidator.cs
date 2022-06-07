@@ -8,8 +8,6 @@ namespace AGJProductInventory.Application.Features.Category.Commands.UpdateCateg
         public UpdateCategoryDTOValidator()
         {
             Include(new ICategoryDTOValidator());
-
-            RuleFor(p => p.Id).NotNull().WithMessage("{PropertyName} must be present");
         }
     }
 }

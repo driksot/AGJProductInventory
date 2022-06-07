@@ -5,12 +5,12 @@ using MediatR;
 
 namespace AGJProductInventory.Application.Features.Category.Commands.CreateCategoryCommand
 {
-    public class CreateCategoryCommand : IRequest<BaseCommandResponse>
+    public class CreateCategoryCommand : IRequest<BaseCommandResponse<CreateCategoryDTO>>
     {
         public CreateCategoryDTO CategoryDTO { get; set; }
     }
 
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, BaseCommandResponse>
+    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, BaseCommandResponse<CreateCategoryDTO>>
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
@@ -21,15 +21,17 @@ namespace AGJProductInventory.Application.Features.Category.Commands.CreateCateg
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<CreateCategoryDTO>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse();
+            var response = new BaseCommandResponse<CreateCategoryDTO>();
             var validator = new CreateCategoryDTOValidator();
             var validationResult = await validator.ValidateAsync(request.CategoryDTO);
 
             if (!validationResult.IsValid)
             {
-                response.Success = false;
+                response.IsSuccess = false;
+                response.Data = null;
+                response.Time = DateTime.UtcNow;
                 response.Message = "Category creation failed.";
                 response.Errors = validationResult.Errors.Select(q => q.ErrorMessage).ToList();
             }
@@ -39,9 +41,11 @@ namespace AGJProductInventory.Application.Features.Category.Commands.CreateCateg
 
                 category = await _categoryRepository.Add(category);
 
-                response.Success = true;
+                response.IsSuccess = true;
+                response.Data = _mapper.Map<CreateCategoryDTO>(category);
+                response.Time = DateTime.UtcNow;
                 response.Message = "Category creation successful.";
-                response.Id = category.Id;
+                response.Errors = null;
             }
 
             return response;

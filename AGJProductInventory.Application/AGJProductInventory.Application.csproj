@@ -16,8 +16,4 @@
     <ProjectReference Include="..\AGJProductInventory.Domain\AGJProductInventory.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Product\Commands\" />
-  </ItemGroup>
-
 </Project>

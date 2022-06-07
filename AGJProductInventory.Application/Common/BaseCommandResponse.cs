@@ -1,9 +1,10 @@
 ﻿namespace AGJProductInventory.Application.Common
 {
-    public class BaseCommandResponse
+    public class BaseCommandResponse<T>
     {
-        public int Id { get; set; }
-        public bool Success { get; set; }
+        public T Data { get; set; }
+        public DateTime Time { get; set; }
+        public bool IsSuccess { get; set; }
         public string Message { get; set; }
         public List<string> Errors { get; set; }
     }

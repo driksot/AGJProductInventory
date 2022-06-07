@@ -24,5 +24,12 @@ namespace AGJProductInventory.Persistence.Repositories
             var product = await _dbContext.Products.Include(q => q.Category).FirstOrDefaultAsync(q => q.Id == id);
             return product;
         }
+
+        public async Task Archive(int id)
+        {
+            var product = await _dbContext.Products.FindAsync(id);
+            product.IsArchived = true;
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
