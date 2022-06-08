@@ -49,7 +49,7 @@ namespace AGJProductInventory.API.Controllers
 
         // PUT api/<ProductVariationsController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<BaseCommandResponse<ICustomerAddressListDTO>>> Put(int id, [FromBody] ICustomerAddressListDTO productVariationDTO)
+        public async Task<ActionResult<BaseCommandResponse<UpdateProductVariationDTO>>> Put(int id, [FromBody] UpdateProductVariationDTO productVariationDTO)
         {
             var command = new UpdateProductVariationCommand { Id = id, ProductVariationDTO = productVariationDTO };
             var response = await _mediator.Send(command);

@@ -2,6 +2,8 @@
 {
     public interface IProductInventorySnapshotDTO
     {
-        public IProductInventoryDTO ProductInventoryDTO { get; set; }
+        public int ProductId { get; set; }
+        public int QuantityOnHand { get; set; }
+        public DateTime SnapshotTime { get; set; }
     }
 }

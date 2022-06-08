@@ -15,6 +15,10 @@ using AGJProductInventory.Application.Features.Product.Commands.CreateProductCom
 using AGJProductInventory.Application.Features.Product.Commands.UpdateProductCommand;
 using AGJProductInventory.Application.Features.Product.Queries.GetProductDetailQuery;
 using AGJProductInventory.Application.Features.Product.Queries.GetProductListQuery;
+using AGJProductInventory.Application.Features.ProductInventory.Commands.UpdateProductInventoryUnitsCommand;
+using AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventoryDetailQuery;
+using AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventoryListQuery;
+using AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventorySnapshotQuery;
 using AGJProductInventory.Application.Features.ProductVariation.Commands.CreateProductVariationCommand;
 using AGJProductInventory.Application.Features.ProductVariation.Commands.UpdateProductVariationCommand;
 using AGJProductInventory.Application.Features.ProductVariation.Queries.GetProductVariationDetailQuery;
@@ -44,7 +48,7 @@ namespace AGJProductInventory.Application.Profiles
             CreateMap<ProductVariation, ProductVariationListDTO>().ReverseMap();
             CreateMap<ProductVariation, ProductVariationDetailDTO>().ReverseMap();
             CreateMap<ProductVariation, CreateProductVariationDTO>().ReverseMap();
-            CreateMap<ProductVariation, ICustomerAddressListDTO>().ReverseMap();
+            CreateMap<ProductVariation, UpdateProductVariationDTO>().ReverseMap();
 
             CreateMap<CustomerAddress, ICustomerAddressDTO>().ReverseMap();
             CreateMap<CustomerAddress, CustomerAddressListDTO>().ReverseMap();
@@ -57,6 +61,14 @@ namespace AGJProductInventory.Application.Profiles
             CreateMap<Customer, CustomerDetailDTO>().ReverseMap();
             CreateMap<Customer, UpdateCustomerDTO>().ReverseMap();
             CreateMap<Customer, CreateCustomerDTO>().ReverseMap();
+
+            CreateMap<ProductInventory, IProductInventoryDTO>().ReverseMap();
+            CreateMap<ProductInventory, ProductInventoryListDTO>().ReverseMap();
+            CreateMap<ProductInventory, ProductInventoryDetailDTO>().ReverseMap();
+            CreateMap<ProductInventory, UpdateProductInventoryUnitsDTO>().ReverseMap();
+
+            CreateMap<ProductInventorySnapshot, IProductInventorySnapshotDTO>().ReverseMap();
+            CreateMap<ProductInventorySnapshot, ProductInventorySnapshotListDTO>().ReverseMap();
         }
     }
 }

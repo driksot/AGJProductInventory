@@ -5,13 +5,13 @@ using MediatR;
 
 namespace AGJProductInventory.Application.Features.ProductVariation.Commands.UpdateProductVariationCommand
 {
-    public class UpdateProductVariationCommand : IRequest<BaseCommandResponse<ICustomerAddressListDTO>>
+    public class UpdateProductVariationCommand : IRequest<BaseCommandResponse<UpdateProductVariationDTO>>
     {
         public int Id { get; set; }
-        public ICustomerAddressListDTO ProductVariationDTO { get; set; }
+        public UpdateProductVariationDTO ProductVariationDTO { get; set; }
     }
 
-    public class UpdateProductVariationCommandHandler : IRequestHandler<UpdateProductVariationCommand, BaseCommandResponse<ICustomerAddressListDTO>>
+    public class UpdateProductVariationCommandHandler : IRequestHandler<UpdateProductVariationCommand, BaseCommandResponse<UpdateProductVariationDTO>>
     {
         private readonly IProductVariationRepository _productVariationRepository;
         private readonly IMapper _mapper;
@@ -22,9 +22,9 @@ namespace AGJProductInventory.Application.Features.ProductVariation.Commands.Upd
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<ICustomerAddressListDTO>> Handle(UpdateProductVariationCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<UpdateProductVariationDTO>> Handle(UpdateProductVariationCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<ICustomerAddressListDTO>();
+            var response = new BaseCommandResponse<UpdateProductVariationDTO>();
             var validator = new UpdateProductVariationDTOValidator();
             var validationResult = await validator.ValidateAsync(request.ProductVariationDTO);
 
@@ -45,7 +45,7 @@ namespace AGJProductInventory.Application.Features.ProductVariation.Commands.Upd
                 await _productVariationRepository.Update(productVariation);
 
                 response.IsSuccess = true;
-                response.Data = _mapper.Map<ICustomerAddressListDTO>(productVariation);
+                response.Data = _mapper.Map<UpdateProductVariationDTO>(productVariation);
                 response.Time = DateTime.UtcNow;
                 response.Message = "Category creation successful.";
                 response.Errors = null;
