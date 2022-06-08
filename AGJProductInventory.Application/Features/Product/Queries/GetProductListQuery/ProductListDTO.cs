@@ -1,5 +1,4 @@
 ﻿using AGJProductInventory.Application.Common;
-using AGJProductInventory.Application.Features.Category.Queries.GetCategoryDetailQuery;
 
 namespace AGJProductInventory.Application.Features.Product.Queries.GetProductListQuery
 {
