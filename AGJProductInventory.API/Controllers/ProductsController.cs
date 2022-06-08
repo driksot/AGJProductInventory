@@ -50,20 +50,20 @@ namespace AGJProductInventory.API.Controllers
 
         // PUT api/<ProductsController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] UpdateProductDTO productDTO)
+        public async Task<ActionResult<BaseCommandResponse<UpdateProductDTO>>> Put(int id, [FromBody] UpdateProductDTO productDTO)
         {
             var command = new UpdateProductCommand { Id = id, ProductDTO = productDTO };
-            await _mediator.Send(command);
-            return NoContent();
+            var response = await _mediator.Send(command);
+            return Ok(response);
         }
 
         // DELETE api/<ProductsController>/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<BaseCommandResponse<int>>> Delete(int id)
         {
             var command = new DeleteProductCommand { Id = id };
-            await _mediator.Send(command);
-            return NoContent();
+            var response = await _mediator.Send(command);
+            return Ok(response);
         }
     }
 }

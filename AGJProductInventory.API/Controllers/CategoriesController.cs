@@ -41,7 +41,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<CategoriesController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse<Category>>> Post([FromBody] CreateCategoryDTO categoryDTO)
+        public async Task<ActionResult<BaseCommandResponse<CreateCategoryDTO>>> Post([FromBody] CreateCategoryDTO categoryDTO)
         {
             var command = new CreateCategoryCommand { CategoryDTO = categoryDTO };
             var response = await _mediator.Send(command);
@@ -49,21 +49,21 @@ namespace AGJProductInventory.API.Controllers
         }
 
         // PUT api/<CategoriesController>/5
-        [HttpPut]
-        public async Task<ActionResult> Put([FromBody] UpdateCategoryDTO categoryDTO)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<BaseCommandResponse<UpdateCategoryDTO>>> Put(int id, [FromBody] UpdateCategoryDTO categoryDTO)
         {
-            var command = new UpdateCategoryCommand { CategoryDTO = categoryDTO };
-            await _mediator.Send(command);
-            return NoContent();
+            var command = new UpdateCategoryCommand { Id = id, CategoryDTO = categoryDTO };
+            var response = await _mediator.Send(command);
+            return Ok(response);
         }
 
         // DELETE api/<CategoriesController>/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<BaseCommandResponse<Category>>> Delete(int id)
         {
             var command = new DeleteCategoryCommand { Id = id };
-            await _mediator.Send(command);
-            return NoContent();
+            var response = await _mediator.Send(command);
+            return Ok(response);
         }
     }
 }

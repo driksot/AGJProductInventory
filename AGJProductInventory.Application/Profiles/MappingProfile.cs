@@ -7,6 +7,10 @@ using AGJProductInventory.Application.Features.Product.Commands.CreateProductCom
 using AGJProductInventory.Application.Features.Product.Commands.UpdateProductCommand;
 using AGJProductInventory.Application.Features.Product.Queries.GetProductDetailQuery;
 using AGJProductInventory.Application.Features.Product.Queries.GetProductListQuery;
+using AGJProductInventory.Application.Features.ProductVariation.Commands.CreateProductVariationCommand;
+using AGJProductInventory.Application.Features.ProductVariation.Commands.UpdateProductVariationCommand;
+using AGJProductInventory.Application.Features.ProductVariation.Queries.GetProductVariationDetailQuery;
+using AGJProductInventory.Application.Features.ProductVariation.Queries.GetProductVariationListQuery;
 using AGJProductInventory.Domain;
 using AutoMapper;
 
@@ -27,6 +31,12 @@ namespace AGJProductInventory.Application.Profiles
             CreateMap<Product, ProductDetailDTO>().ReverseMap();
             CreateMap<Product, CreateProductDTO>().ReverseMap();
             CreateMap<Product, UpdateProductDTO>().ReverseMap();
+
+            CreateMap<ProductVariation, IProductVariationDTO>().ReverseMap();
+            CreateMap<ProductVariation, ProductVariationListDTO>().ReverseMap();
+            CreateMap<ProductVariation, ProductVariationDetailDTO>().ReverseMap();
+            CreateMap<ProductVariation, CreateProductVariationDTO>().ReverseMap();
+            CreateMap<ProductVariation, UpdateProductVariationDTO>().ReverseMap();
         }
     }
 }

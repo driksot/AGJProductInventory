@@ -19,10 +19,11 @@ namespace AGJProductInventory.Persistence.Repositories
             return entity;
         }
 
-        public async Task Delete(T entity)
+        public async Task<T> Delete(T entity)
         {
             _dbContext.Set<T>().Remove(entity);
             await _dbContext.SaveChangesAsync();
+            return entity;
         }
 
         public async Task<bool> Exists(int id)
@@ -41,10 +42,11 @@ namespace AGJProductInventory.Persistence.Repositories
             return await _dbContext.Set<T>().ToListAsync();
         }
 
-        public async Task Update(T entity)
+        public async Task<T> Update(T entity)
         {
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
+            return entity;
         }
     }
 }
