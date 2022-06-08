@@ -1,6 +1,8 @@
-﻿namespace AGJProductInventory.Application.Common
+﻿using AGJProductInventory.Application.Common;
+
+namespace AGJProductInventory.Application.Features.CustomerAddress.Commands.UpdateCustomerAddressCommand
 {
-    public interface ICustomerAddressDTO
+    public class UpdateCustomerAddressDTO : ICustomerAddressDTO
     {
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }

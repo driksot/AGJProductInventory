@@ -2,7 +2,7 @@
 
 namespace AGJProductInventory.Application.Features.ProductVariation.Commands.UpdateProductVariationCommand
 {
-    public class UpdateProductVariationDTOValidator : AbstractValidator<UpdateProductVariationDTO>
+    public class UpdateProductVariationDTOValidator : AbstractValidator<ICustomerAddressListDTO>
     {
         public UpdateProductVariationDTOValidator()
         {

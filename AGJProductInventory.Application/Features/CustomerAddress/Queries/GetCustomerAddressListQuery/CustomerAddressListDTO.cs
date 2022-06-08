@@ -1,6 +1,8 @@
-﻿namespace AGJProductInventory.Application.Common
+﻿using AGJProductInventory.Application.Common;
+
+namespace AGJProductInventory.Application.Features.CustomerAddress.Queries.GetCustomerAddressListQuery
 {
-    public interface ICustomerAddressDTO
+    public class CustomerAddressListDTO : BaseDTO, ICustomerAddressDTO
     {
         public string AddressLine1 { get; set; }
         public string AddressLine2 { get; set; }

@@ -19,6 +19,7 @@ namespace AGJProductInventory.Persistence
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductVariationRepository, ProductVariationRepository>();
+            services.AddScoped<ICustomerAddressRepository, CustomerAddressRepository>();
 
             return services;
         }

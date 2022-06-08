@@ -3,6 +3,10 @@ using AGJProductInventory.Application.Features.Category.Commands.CreateCategoryC
 using AGJProductInventory.Application.Features.Category.Commands.UpdateCategoryCommand;
 using AGJProductInventory.Application.Features.Category.Queries.GetCategoriesListQuery;
 using AGJProductInventory.Application.Features.Category.Queries.GetCategoryDetailQuery;
+using AGJProductInventory.Application.Features.CustomerAddress.Commands.CreateCustomerAddressCommand;
+using AGJProductInventory.Application.Features.CustomerAddress.Commands.UpdateCustomerAddressCommand;
+using AGJProductInventory.Application.Features.CustomerAddress.Queries.GetCustomerAddressDetailQuery;
+using AGJProductInventory.Application.Features.CustomerAddress.Queries.GetCustomerAddressListQuery;
 using AGJProductInventory.Application.Features.Product.Commands.CreateProductCommand;
 using AGJProductInventory.Application.Features.Product.Commands.UpdateProductCommand;
 using AGJProductInventory.Application.Features.Product.Queries.GetProductDetailQuery;
@@ -36,7 +40,13 @@ namespace AGJProductInventory.Application.Profiles
             CreateMap<ProductVariation, ProductVariationListDTO>().ReverseMap();
             CreateMap<ProductVariation, ProductVariationDetailDTO>().ReverseMap();
             CreateMap<ProductVariation, CreateProductVariationDTO>().ReverseMap();
-            CreateMap<ProductVariation, UpdateProductVariationDTO>().ReverseMap();
+            CreateMap<ProductVariation, ICustomerAddressListDTO>().ReverseMap();
+
+            CreateMap<CustomerAddress, ICustomerAddressDTO>().ReverseMap();
+            CreateMap<CustomerAddress, CustomerAddressListDTO>().ReverseMap();
+            CreateMap<CustomerAddress, CustomerAddressDetailDTO>().ReverseMap();
+            CreateMap<CustomerAddress, UpdateCustomerAddressDTO>().ReverseMap();
+            CreateMap<CustomerAddress, CreateCustomerAddressDTO>().ReverseMap();
         }
     }
 }

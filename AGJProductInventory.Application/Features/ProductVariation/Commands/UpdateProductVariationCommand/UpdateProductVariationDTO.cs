@@ -2,7 +2,7 @@
 
 namespace AGJProductInventory.Application.Features.ProductVariation.Commands.UpdateProductVariationCommand
 {
-    public class UpdateProductVariationDTO : IProductVariationDTO
+    public class ICustomerAddressListDTO : IProductVariationDTO
     {
         public int ProductId { get; set; }
         public string Size { get; set; }

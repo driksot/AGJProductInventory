@@ -21,7 +21,8 @@ namespace AGJProductInventory.Persistence.Repositories
 
         public async Task<Product> GetProductWithDetails(int id)
         {
-            var product = await _dbContext.Products.Include(q => q.Category).FirstOrDefaultAsync(q => q.Id == id);
+            var product = await _dbContext.Products.Include(q => q.Category).Include(q => q.ProductVariations)
+                .FirstOrDefaultAsync(q => q.Id == id);
             return product;
         }
 
