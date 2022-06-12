@@ -1,0 +1,58 @@
+﻿@page "/category/new"
+@page "/category/edit/{id:int}"
+@inject ICategoryService _categoryService
+@inject NavigationManager _navigation
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private CategoryViewModel Category { get; set; } = new CategoryViewModel();
+    private string Title { get; set; } = "Create";
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Id == 0)
+            {
+                // create
+                IsLoading = false;
+            }
+            else
+            {
+                // update
+                Title = "Update";
+                await LoadCategory();
+            }
+        }
+    }
+
+    private async Task LoadCategory()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        Category = await _categoryService.Get(Id);
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (Category.Id == 0)
+        {
+            // Create Category
+            await _categoryService.Add(Category);
+        }
+        else
+        {
+            // Update Category
+            await _categoryService.Update(Category);
+        }
+
+        _navigation.NavigateTo("category");
+    }
+}

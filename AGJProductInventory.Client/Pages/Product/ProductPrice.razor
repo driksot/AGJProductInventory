@@ -1,0 +1,132 @@
+﻿@page "/product/price/{id:int}"
+@using AGJProductInventory.Client.Pages.Product.Components
+@inject IProductService _productService
+@inject IProductVariationService _productVariationService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+
+<MudPaper Class="my-8">
+    <MudGrid Class="px-4">
+        <MudItem xs="10">
+            <MudText Typo="Typo.h4">@Product.Name.ToUpper()</MudText>
+            <MudText>Category : @Product.Category.Name</MudText> <br />
+            <MudText>Description : @Product.Description</MudText>
+        </MudItem>
+        <MudItem xs="2">
+            <img src="@Product.ImageUrl" style="width:fit-content" />
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+
+<MudTable Items="ProductVariations" Hover="true" CanCancelEdit="true" Filter="new Func<ProductVariationViewModel, bool>(FilterFunc)"
+          @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+          OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted">
+    <ToolBarContent>
+        <MudButton @onclick="OpenDialog" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">New Size</MudButton>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationViewModel, object>(x=>x.Size)">Size</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationViewModel, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Size">@context.Size</MudTd>
+        <MudTd DataLabel="Price">@context.Price</MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+        <MudTd DataLabel="Size">
+            <MudTextField @bind-Value="@context.Size" Required />
+        </MudTd>
+        <MudTd DataLabel="Price">
+            <MudNumericField @bind-Value="@context.Price" Required Min="0.1" Format="N2" />
+        </MudTd>
+    </RowEditingTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private List<string> editEvents = new();
+    private string searchString = "";
+    private ProductVariationViewModel selectedItem1 = null;
+    private ProductVariationViewModel elementBeforeEdit;
+    private HashSet<ProductVariationViewModel> selectedItems1 = new HashSet<ProductVariationViewModel>();
+
+    private ProductViewModel Product { get; set; } = new ProductViewModel();
+    private IEnumerable<ProductVariationViewModel> ProductVariations { get; set; } = new List<ProductVariationViewModel>();
+    private bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsLoading = true;
+            StateHasChanged();
+            Product = await _productService.Get(Id);
+            ProductVariations = await _productVariationService.GetAllByProduct(Id);
+            IsLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ClearEventLog()
+    {
+        editEvents.Clear();
+    }
+
+    private void AddEditionEvent(string message)
+    {
+        editEvents.Add(message);
+        StateHasChanged();
+    }
+
+    private void BackupItem(object variation)
+    {
+        elementBeforeEdit = new()
+        {
+            Size = ((ProductVariationViewModel)variation).Size,
+            Price = ((ProductVariationViewModel)variation).Price
+        };
+        AddEditionEvent($"RowEditPreview event: made a backup of Element {((ProductVariationViewModel)variation).Size}");
+    }
+
+    private void ItemHasBeenCommitted(object variation)
+    {
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((ProductVariationViewModel)variation).Size} committed");
+    }
+
+    private void ResetItemToOriginalValues(object variation)
+    {
+        ((ProductVariationViewModel)variation).Size = elementBeforeEdit.Size;
+        ((ProductVariationViewModel)variation).Price = elementBeforeEdit.Price;
+        AddEditionEvent($"RowEditCancel event: Editing of Element {((ProductVariationViewModel)variation).Size} cancelled");
+    }
+
+    private bool FilterFunc(ProductVariationViewModel variation)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (variation.Size.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (variation.Price.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{variation.Size} {variation.Price.ToString()}".Contains(searchString))
+            return true;
+        return false;
+    } 
+
+    private void OpenDialog()
+    {    
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+
+        DialogService.Show<AddProductVariationModal>("Add", options);
+    }
+}

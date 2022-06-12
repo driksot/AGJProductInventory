@@ -1,0 +1,117 @@
+﻿@page "/product"
+@inject IProductService _productService
+
+<MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"Product Management".ToUpper())</MudText>
+
+@if (IsLoading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<ProductViewModel>>>(ServerReload))"
+          Dense="true" Hover="true" @ref="table">
+        <ToolBarContent>
+            <MudButton Href="product/new" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">New Product</MudButton>
+            <MudButton Href="category/new" DisableElevation Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Class="ms-2">New Category</MudButton>
+            <MudSpacer />
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortLabel="name_field" T="ProductViewModel">Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="category_field" T="ProductViewModel">Category</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="archived_field" T="ProductViewModel">Archived</MudTableSortLabel></MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Category">@context.Category.Name</MudTd>
+            <MudTd DataLabel="Archived">
+                <MudCheckBox @bind-Checked="@context.IsArchived" Disabled="true"></MudCheckBox>
+            </MudTd>
+            <MudTd DataLabel="Actions">
+                <MudButton Href="@($"product/price/{context.Id}")" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PriceChange" Color="Color.Success">Prices</MudButton>
+                <MudButton Href="@($"product/edit/{context.Id}")" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Class="ms-1">Edit</MudButton>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Class="ms-1">Delete</MudButton>
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Loading...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}
+
+
+
+@code {
+    private IEnumerable<ProductViewModel> Products { get; set; } = new List<ProductViewModel>();
+    private MudTable<ProductViewModel> table;
+    private int totalItems;
+    private string searchString = null;
+
+    public bool IsLoading { get; set; }
+
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        await LoadProducts();
+    //    }
+    //}
+
+    //private async Task LoadProducts()
+    //{
+    //    IsLoading = true;
+    //    StateHasChanged();
+    //    Products = await _productService.GetAll();
+    //    IsLoading = false;
+    //    StateHasChanged();
+    //}
+
+    private async Task<TableData<ProductViewModel>> ServerReload(TableState state)
+    {
+        IEnumerable<ProductViewModel> data = await _productService.GetProductListWithDetails();
+        await Task.Delay(300);
+        data = data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.Category.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.Name} {element.Category.Name}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        totalItems = data.Count();
+        switch(state.SortLabel)
+        {
+            case "name_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.Name);
+                break;
+            case "category_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.Category.Name);
+                break;
+            case "archived_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.IsArchived);
+                break;
+        }
+
+        Products = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<ProductViewModel>() { TotalItems = totalItems, Items = Products };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+}

@@ -1,0 +1,52 @@
+﻿@using AGJProductInventory.Client.Settings
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">AGJ INVENTORY</MudText>
+        <MudSpacer />
+        <MudTooltip Text="Toggle Dark Mode">
+            <MudIconButton Icon="@Icons.Material.Filled.Brightness4" Color="Color.Inherit" OnClick="@((e) => DarkMode())" />
+        </MudTooltip>
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+        <NavMenu/>
+    </MudDrawer>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+            <CascadingValue Value="_theme">
+                @Body
+            </CascadingValue>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private MudTheme _theme = new();
+    private bool _isDarkMode;
+    bool _drawerOpen = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isDarkMode = false;
+        _theme = CustomTheme.DefaultTheme;
+    }
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task DarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+        _theme = _isDarkMode
+            ? CustomTheme.DarkTheme
+            : CustomTheme.DefaultTheme;
+    }
+}

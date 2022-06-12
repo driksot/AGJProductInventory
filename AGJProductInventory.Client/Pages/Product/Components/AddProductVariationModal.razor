@@ -1,0 +1,43 @@
+﻿@inject IProductVariationService _productVariationService
+
+<EditForm Model="ProductVariation" OnInvalidSubmit="SaveAsync">
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+                @("Add Product Size".ToUpper())
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="ProductVariation.Size" T="string" Label="Size" Required />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudNumericField @bind-Value="ProductVariation.Price" T="double" Label="Price" Required Min="0.1" Format="N2" />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
+            <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Success">Save</MudButton>
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private ProductVariationViewModel ProductVariation { get; set; } = new ProductVariationViewModel();
+
+    public void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task SaveAsync()
+    {
+        await _productVariationService.Add(ProductVariation);
+        MudDialog.Close();
+    }
+}

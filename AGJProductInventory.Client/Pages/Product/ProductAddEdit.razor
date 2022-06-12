@@ -1,0 +1,172 @@
+﻿@page "/product/new"
+@page "/product/edit/{id:int}"
+@using System.ComponentModel.DataAnnotations
+@using AGJProductInventory.Client.Helpers
+@inject IProductService _productService
+@inject ICategoryService _categoryService
+@inject NavigationManager _navigation
+@inject ISnackbar Snackbar
+@inject HttpClient _http
+@inject IFileUploadService _fileUploadService
+
+
+<MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"{Title} Product".ToUpper())</MudText>
+
+<EditForm Model="Product" OnValidSubmit="HandleValidSubmit">
+    <MudGrid>
+        <MudItem xs="9">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField @bind-Value="Product.Name" Label="Name" Variant="Variant.Outlined" Class="mb-4" />
+                    <MudTextField @bind-Value="Product.Description" Label="Description" Variant="Variant.Outlined" Lines="8" Class="mb-4" />
+                    <MudSelect T="CategoryViewModel" @bind-Value="Product.Category" Label="Category" Variant="Variant.Outlined">
+                        @foreach (var category in Categories)
+                        {
+                            <MudSelectItem Value="@category">@category.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions Class="ms-2 pb-2">
+                    <MudButton Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Save"
+                               Color="Color.Primary"
+                               ButtonType="MudBlazor.ButtonType.Submit">
+                        Save
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.ArrowBack"
+                               Color="Color.Secondary"
+                               Class="ms-2"
+                               Href="/product">
+                        Back
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="3">
+            <MudCard>
+                <MudCardContent Class="d-flex justify-center">
+                    <InputFile id="photoUpload" OnChange="UploadFile" hidden accept=".jpg, .jpeg, .png" />
+
+                    <MudButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Filled.CloudUpload"
+                               for="photoUpload">
+                        Upload Photo
+                    </MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    protected MudTheme Theme { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private Stream _fileStream = null;
+    private string _selectedFileName = null;
+    private ProductViewModel Product { get; set; } = new ProductViewModel()
+        {
+            ImageUrl = "/images/default.png"
+        };
+    private IEnumerable<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
+    private string Title { get; set; } = "Add";
+    private long _uploaded = 0;
+    private double _percentage = 0;
+    public bool IsLoading { get; set; }
+    public string OldImageUrl { get; set; }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadProduct();
+        }
+    }
+
+    public async Task SubmitFileAsync()
+    {
+        var content = new MultipartFormDataContent();
+        var streamContent = new ProgressiveStreamContent(_fileStream, 40096, (u, p) =>
+        {
+            _uploaded = u;
+            _percentage = p;
+            StateHasChanged();
+        });
+
+        content.Add(streamContent, "File");
+
+        var response = await _fileUploadService.UploadFile(streamContent);
+    }
+
+    private async Task LoadProduct()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        Categories = await _categoryService.GetAll();
+        if (Id != 0)
+        {
+            // update
+            Title = "Update";
+            Product = await _productService.Get(Id);
+            OldImageUrl = Product.ImageUrl;
+        }
+
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs args)
+    {
+
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (Product.Id == 0)
+        {
+            // Create Product
+            await _productService.Add(Product);
+        }
+        else
+        {
+            // Update Product
+            if (OldImageUrl != Product.ImageUrl)
+            {
+                // upload file
+            }
+
+            await _productService.Update(Product);
+        }
+
+        _navigation.NavigateTo("product");
+    }
+
+    private void UploadFile(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        if (file == null) return;
+
+        //Do your validations here
+        //Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        //Snackbar.Add($"Files with {file.Size} bytes size are not allowed", Severity.Error);
+        //Snackbar.Add($"Files starting with letter {file.Name.Substring(0, 1)} are not recommended", Severity.Warning);
+        //Snackbar.Add($"This file has the extension {file.Name.Split(".").Last()}", Severity.Info);
+
+        //TODO upload the files to the server
+        using (var stream = file.OpenReadStream(50000000))
+        {
+            _fileStream = stream;
+            _selectedFileName = file.Name;
+        }
+
+        SubmitFileAsync();
+    }
+}

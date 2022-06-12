@@ -4,7 +4,7 @@ namespace AGJProductInventory.Application.Features.ProductInventory.Queries.GetP
 {
     public class ProductInventoryDetailDTO : BaseDTO, IProductInventoryDTO
     {
-        public int ProductId { get; set; }
+        public int ProductVariationId { get; set; }
         public int QuantityOnHand { get; set; }
         public int IdealQuantity { get; set; }
     }

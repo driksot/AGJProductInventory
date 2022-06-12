@@ -6,6 +6,7 @@ namespace AGJProductInventory.Application.Features.ProductVariation.Queries.GetP
 {
     public class GetProductVariationListQuery : IRequest<List<ProductVariationListDTO>>
     {
+        public int ProductId { get; set; }
     }
 
     public class GetProductVariationListQueryHandler : IRequestHandler<GetProductVariationListQuery, List<ProductVariationListDTO>>
@@ -21,7 +22,7 @@ namespace AGJProductInventory.Application.Features.ProductVariation.Queries.GetP
 
         public async Task<List<ProductVariationListDTO>> Handle(GetProductVariationListQuery request, CancellationToken cancellationToken)
         {
-            var productVariations = await _productVariationRepository.GetAll();
+            var productVariations = await _productVariationRepository.GetAllByProduct(request.ProductId);
             return _mapper.Map<List<ProductVariationListDTO>>(productVariations);
         }
     }

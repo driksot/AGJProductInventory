@@ -23,10 +23,10 @@ namespace AGJProductInventory.API.Controllers
         }
 
         // GET: api/<ProductVariationsController>
-        [HttpGet]
-        public async Task<ActionResult<List<ProductVariationListDTO>>> Get()
+        [HttpGet("product/{id}")]
+        public async Task<ActionResult<List<ProductVariationListDTO>>> GetAllByProduct(int id)
         {
-            var productVariations = await _mediator.Send(new GetProductVariationListQuery());
+            var productVariations = await _mediator.Send(new GetProductVariationListQuery { ProductId = id });
             return Ok(productVariations);
         }
 

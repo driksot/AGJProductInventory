@@ -16,8 +16,8 @@ namespace AGJProductInventory.Persistence.Repositories
         public async Task<List<ProductInventory>> GetProductInventoryListWithDetails()
         {
             var inventoryList = await _dbContext.ProductInventories
-                .Include(q => q.Product)
-                .Where(q => !q.Product.IsArchived)
+                .Include(q => q.ProductVariation)
+                .Where(q => !q.ProductVariation.Product.IsArchived)
                 .ToListAsync();
             return inventoryList;
         }
@@ -26,8 +26,8 @@ namespace AGJProductInventory.Persistence.Repositories
         {
             var start = DateTime.UtcNow - TimeSpan.FromDays(7);
             var snapshots = await _dbContext.ProductInventorySnapshots
-                .Include(q => q.Product)
-                .Where(q => q.SnapshotTime > start && !q.Product.IsArchived)
+                .Include(q => q.ProductVariation)
+                .Where(q => q.SnapshotTime > start && !q.ProductVariation.Product.IsArchived)
                 .ToListAsync();
             return snapshots;
         }
@@ -35,16 +35,16 @@ namespace AGJProductInventory.Persistence.Repositories
         public async Task<ProductInventory> GetProductInventoryWithDetails(int id)
         {
             var inventory = await _dbContext.ProductInventories
-                .Include(q => q.Product)
-                .FirstOrDefaultAsync(q => q.ProductId == id);
+                .Include(q => q.ProductVariation)
+                .FirstOrDefaultAsync(q => q.ProductVariationId == id);
             return inventory;
         }
 
         public async Task<ProductInventory> UpdateProductInventoryUnitsAvailable(int id, int adjustment)
         {
             var inventory = await _dbContext.ProductInventories
-                .Include(q => q.Product)
-                .FirstOrDefaultAsync(q => q.ProductId == id);
+                .Include(q => q.ProductVariation)
+                .FirstOrDefaultAsync(q => q.ProductVariationId == id);
 
             inventory.QuantityOnHand += adjustment;
 
@@ -59,7 +59,7 @@ namespace AGJProductInventory.Persistence.Repositories
         {
             var snapshot = new ProductInventorySnapshot()
             {
-                Product = productInventory.Product,
+                ProductVariation = productInventory.ProductVariation,
                 QuantityOnHand = productInventory.QuantityOnHand,
                 SnapshotTime = DateTime.UtcNow
             };
