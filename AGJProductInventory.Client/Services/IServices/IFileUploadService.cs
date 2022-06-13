@@ -1,11 +1,10 @@
-﻿using AGJProductInventory.Client.Helpers;
-using Microsoft.AspNetCore.Components.Forms;
+﻿using AGJProductInventory.Application.Common;
 
 namespace AGJProductInventory.Client.Services.IServices
 {
     public interface IFileUploadService
     {
-        Task<string> UploadFile(ProgressiveStreamContent streamContent);
+        Task<HttpResponseMessage> UploadFile(UploadedImage uploadedImage);
 
         bool DeleteFile(string filePath);
     }

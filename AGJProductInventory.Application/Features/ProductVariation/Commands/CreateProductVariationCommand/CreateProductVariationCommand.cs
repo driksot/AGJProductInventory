@@ -38,7 +38,7 @@ namespace AGJProductInventory.Application.Features.ProductVariation.Commands.Cre
             else
             {
                 var productVariation = _mapper.Map<Domain.ProductVariation>(request.ProductVariationDTO);
-                productVariation = await _productVariationRepository.Add(productVariation);
+                productVariation = await _productVariationRepository.CreateProductVariationAndInventory(productVariation);
 
                 response.IsSuccess = true;
                 response.Data = _mapper.Map<CreateProductVariationDTO>(productVariation);

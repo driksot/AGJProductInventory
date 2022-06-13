@@ -1,0 +1,103 @@
+﻿@page "/category"
+@inject ICategoryService _categoryService
+@inject IDialogService _dialogService
+
+<MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"Category Management".ToUpper())</MudText>
+
+<MudTable ServerData="@(new Func<TableState, Task<TableData<CategoryViewModel>>>(ServerReload))"
+          Dense="true" Hover="true" Striped="true" Bordered="true" @ref="table">
+    <ToolBarContent>
+        <MudButton @onclick="@(() => OpenDialog())" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Class="ms-2">New Category</MudButton>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="width: 60%" />
+        <col />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="name_field" T="CategoryViewModel">Name</MudTableSortLabel></MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Actions">
+            <MudButton @onclick="@(() => OpenDialog(@context.Id))" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Class="ms-1">Edit</MudButton>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Class="ms-1">Delete</MudButton>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+
+@code {
+    private IEnumerable<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
+    private MudTable<CategoryViewModel> table;
+    private int totalItems;
+    private string searchString = null;
+
+    public bool IsLoading { get; set; }
+
+    private async Task<TableData<CategoryViewModel>> ServerReload(TableState state)
+    {
+        IEnumerable<CategoryViewModel> data = await _categoryService.GetAll();
+        await Task.Delay(300);
+        data = data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.Name}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        totalItems = data.Count();
+
+        data = data.OrderByDirection(state.SortDirection, o => o.Name);
+
+        Categories = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<CategoryViewModel>() { TotalItems = totalItems, Items = Categories };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+
+    private async void OpenDialog(int id = 0)
+    {
+        var parameters = new DialogParameters();
+        if (id != 0)
+        {
+            var category = Categories.FirstOrDefault(q => q.Id == id);
+            if (category != null)
+            {
+                parameters.Add(nameof(AddEditCategoryModal.Category), new CategoryViewModel
+                {
+                    Id = category.Id,
+                    Name = category.Name
+                });
+            }
+
+
+        }
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+        var dialog = _dialogService.Show<AddEditCategoryModal>(id == 0 ? "Add" : "Update", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            OnSearch("");
+        }
+    }
+}

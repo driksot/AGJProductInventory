@@ -6,5 +6,6 @@ namespace AGJProductInventory.Client.Services.IServices
     {
         Task<ProductViewModel> GetProductWithDetails(int id);
         Task<List<ProductViewModel>> GetProductListWithDetails();
+        Task<HttpResponseMessage> AddProduct(ProductViewModel entity);
     }
 }

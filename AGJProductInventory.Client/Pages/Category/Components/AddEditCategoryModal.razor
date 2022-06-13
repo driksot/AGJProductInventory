@@ -1,0 +1,89 @@
+﻿@inject ICategoryService _categoryService
+
+<EditForm Model="Category" OnInvalidSubmit="SaveAsync">
+    <MudDialog>
+        <TitleContent>
+            <MudText Typo="Typo.h6">
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
+                @($"{Title} Category".ToUpper())
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Category.Name" T="string" Label="Name" Required />
+                </MudItem>
+            </MudGrid>
+        </DialogContent>
+        <DialogActions>
+            <MudButton DisableElevation Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
+            @if (Category.Id != 0)
+            {
+                <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Secondary">Update</MudButton>
+            }
+            else
+            {
+                <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Success">Save</MudButton>
+            }
+
+        </DialogActions>
+    </MudDialog>
+</EditForm>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    public CategoryViewModel Category { get; set; } = new CategoryViewModel();
+    private string Title = "Add";
+    public bool IsLoading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (Id == 0)
+            {
+                // create
+                IsLoading = false;
+            }
+            else
+            {
+                // update
+                Title = "Update";
+                await LoadCategory();
+            }
+        }
+    }
+
+    private async Task LoadCategory()
+    {
+        IsLoading = true;
+        StateHasChanged();
+        Category = await _categoryService.Get(Id);
+        IsLoading = false;
+        StateHasChanged();
+    }
+
+    public void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task SaveAsync()
+    {
+        if (Category.Id == 0)
+        {
+            // Create Category
+            await _categoryService.Add(Category);
+        }
+        else
+        {
+            // Update Category
+            await _categoryService.Update(Category);
+        }
+
+        MudDialog.Close();
+    }
+}

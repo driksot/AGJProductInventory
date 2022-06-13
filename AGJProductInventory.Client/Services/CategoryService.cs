@@ -1,4 +1,5 @@
 ﻿using AGJProductInventory.Client.Services.IServices;
+using AGJProductInventory.Client.Static;
 using AGJProductInventory.Client.ViewModels;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
@@ -8,12 +9,12 @@ namespace AGJProductInventory.Client.Services
     public class CategoryService : ICategoryService
     {
         private readonly HttpClient _http;
-        private string CategoryUrl;
+        private string _categoryUrl;
 
         public CategoryService(HttpClient http)
         {
             _http = http;
-            CategoryUrl = "/api/categories/";
+            _categoryUrl = APIEndpoints.s_categories;
         }
 
         public async Task<CategoryViewModel> Add(CategoryViewModel entity)
@@ -27,7 +28,7 @@ namespace AGJProductInventory.Client.Services
                 request.Method = HttpMethod.Post;
                 request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/plain"));
 
-                var result = await _http.PostAsync(CategoryUrl, request.Content);
+                var result = await _http.PostAsync(_categoryUrl, request.Content);
                 var response = await result.Content.ReadAsStringAsync();
 
                 var category = JsonConvert.DeserializeObject<CategoryViewModel>(response);
@@ -45,10 +46,10 @@ namespace AGJProductInventory.Client.Services
         public async Task<CategoryViewModel> Delete(CategoryViewModel entity)
         {
             var categoryId = entity.Id;
-            var response = await _http.GetAsync(CategoryUrl + categoryId);
+            var response = await _http.GetAsync(_categoryUrl + categoryId);
             var content = await response.Content.ReadAsStringAsync();
 
-            await _http.DeleteAsync(CategoryUrl + categoryId);
+            await _http.DeleteAsync(_categoryUrl + categoryId);
 
             var category = JsonConvert.DeserializeObject<CategoryViewModel>(content);
             return category;
@@ -61,7 +62,7 @@ namespace AGJProductInventory.Client.Services
 
         public async Task<CategoryViewModel> Get(int id)
         {
-            var response = await _http.GetAsync(CategoryUrl + id);
+            var response = await _http.GetAsync(_categoryUrl + id);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
@@ -78,7 +79,7 @@ namespace AGJProductInventory.Client.Services
 
         public async Task<IReadOnlyList<CategoryViewModel>> GetAll()
         {
-            var response = await _http.GetAsync(CategoryUrl);
+            var response = await _http.GetAsync(_categoryUrl);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
@@ -106,7 +107,7 @@ namespace AGJProductInventory.Client.Services
                 request.Method = HttpMethod.Post;
                 request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/plain"));
 
-                var result = await _http.PutAsync(CategoryUrl + categoryId, request.Content);
+                var result = await _http.PutAsync(_categoryUrl + categoryId, request.Content);
                 var response = await result.Content.ReadAsStringAsync();
 
                 var category = JsonConvert.DeserializeObject<CategoryViewModel>(response);

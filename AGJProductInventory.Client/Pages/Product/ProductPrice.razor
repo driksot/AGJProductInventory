@@ -1,78 +1,88 @@
 ﻿@page "/product/price/{id:int}"
-@using AGJProductInventory.Client.Pages.Product.Components
 @inject IProductService _productService
 @inject IProductVariationService _productVariationService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
+<MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@("Product Price Management".ToUpper())</MudText>
 
-<MudPaper Class="my-8">
-    <MudGrid Class="px-4">
-        <MudItem xs="10">
-            <MudText Typo="Typo.h4">@Product.Name.ToUpper()</MudText>
-            <MudText>Category : @Product.Category.Name</MudText> <br />
-            <MudText>Description : @Product.Description</MudText>
-        </MudItem>
-        <MudItem xs="2">
-            <img src="@Product.ImageUrl" style="width:fit-content" />
-        </MudItem>
-    </MudGrid>
-</MudPaper>
+@if (_isLoading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudPaper Class="my-8">
+        <MudGrid Class="px-4">
+            <MudItem xs="9">
+                <MudText Class="pb-2" Typo="Typo.h4">@_product.Name.ToUpper()</MudText>
+                <MudText>Category : @_product.Category.Name</MudText> <br />
+                <MudText>Description : @_product.Description</MudText>
+            </MudItem>
+            <MudItem xs="3">
+                <MudContainer>
+                    <img src="@($"{APIEndpoints.ServerBaseUrl}/{_product.ImageUrl}")" style="width:100%;" />
+                </MudContainer>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
 
 
-<MudTable Items="ProductVariations" Hover="true" CanCancelEdit="true" Filter="new Func<ProductVariationViewModel, bool>(FilterFunc)"
+    <MudTable Items="ProductVariations" Striped="true" Hover="true" Dense="true" CanCancelEdit="true" Filter="new Func<ProductVariationViewModel, bool>(FilterFunc)"
           @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
           OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
           RowEditCommit="ItemHasBeenCommitted">
-    <ToolBarContent>
-        <MudButton @onclick="OpenDialog" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">New Size</MudButton>
-        <MudSpacer />
-        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationViewModel, object>(x=>x.Size)">Size</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationViewModel, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Size">@context.Size</MudTd>
-        <MudTd DataLabel="Price">@context.Price</MudTd>
-    </RowTemplate>
-    <RowEditingTemplate>
-        <MudTd DataLabel="Size">
-            <MudTextField @bind-Value="@context.Size" Required />
-        </MudTd>
-        <MudTd DataLabel="Price">
-            <MudNumericField @bind-Value="@context.Price" Required Min="0.1" Format="N2" />
-        </MudTd>
-    </RowEditingTemplate>
-    <PagerContent>
-        <MudTablePager />
-    </PagerContent>
-</MudTable>
+        <ToolBarContent>
+            <MudButton @onclick="OpenDialog" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">New Size</MudButton>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationViewModel, object>(x=>x.Size)">Size</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationViewModel, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Size">@context.Size</MudTd>
+            <MudTd DataLabel="Price">@context.Price</MudTd>
+        </RowTemplate>
+        <RowEditingTemplate>
+            <MudTd DataLabel="Size">
+                <MudTextField @bind-Value="@context.Size" Required />
+            </MudTd>
+            <MudTd DataLabel="Price">
+                <MudNumericField @bind-Value="@context.Price" Required Min="0.1" Format="N2" />
+            </MudTd>
+        </RowEditingTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}
 
 @code {
     [Parameter]
     public int Id { get; set; }
 
+    private ProductViewModel _product { get; set; } = new ProductViewModel();
+
     private List<string> editEvents = new();
     private string searchString = "";
-    private ProductVariationViewModel selectedItem1 = null;
-    private ProductVariationViewModel elementBeforeEdit;
+    private ProductVariationViewModel selectedItem1 = new();
+    private ProductVariationViewModel elementBeforeEdit = new();
     private HashSet<ProductVariationViewModel> selectedItems1 = new HashSet<ProductVariationViewModel>();
 
-    private ProductViewModel Product { get; set; } = new ProductViewModel();
     private IEnumerable<ProductVariationViewModel> ProductVariations { get; set; } = new List<ProductVariationViewModel>();
-    private bool IsLoading { get; set; }
+    private bool _isLoading { get; set; } = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            IsLoading = true;
+            _isLoading = true;
             StateHasChanged();
-            Product = await _productService.Get(Id);
+            _product = await _productService.Get(Id);
             ProductVariations = await _productVariationService.GetAllByProduct(Id);
-            IsLoading = false;
+            _isLoading = false;
             StateHasChanged();
         }
     }
@@ -91,10 +101,10 @@
     private void BackupItem(object variation)
     {
         elementBeforeEdit = new()
-        {
-            Size = ((ProductVariationViewModel)variation).Size,
-            Price = ((ProductVariationViewModel)variation).Price
-        };
+            {
+                Size = ((ProductVariationViewModel)variation).Size,
+                Price = ((ProductVariationViewModel)variation).Price
+            };
         AddEditionEvent($"RowEditPreview event: made a backup of Element {((ProductVariationViewModel)variation).Size}");
     }
 
@@ -121,10 +131,10 @@
         if ($"{variation.Size} {variation.Price.ToString()}".Contains(searchString))
             return true;
         return false;
-    } 
+    }
 
     private void OpenDialog()
-    {    
+    {
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
 
         DialogService.Show<AddProductVariationModal>("Add", options);

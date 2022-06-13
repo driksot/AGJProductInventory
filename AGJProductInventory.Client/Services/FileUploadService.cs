@@ -1,6 +1,8 @@
-﻿using AGJProductInventory.Client.Helpers;
+﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Client.Services.IServices;
-using Microsoft.AspNetCore.Components.Forms;
+using AGJProductInventory.Client.Static;
+using AGJProductInventory.Client.ViewModels;
+using System.Net.Http.Json;
 
 namespace AGJProductInventory.Client.Services
 {
@@ -18,10 +20,9 @@ namespace AGJProductInventory.Client.Services
             throw new NotImplementedException();
         }
 
-        public async Task<string> UploadFile(ProgressiveStreamContent streamContent)
+        public async Task<HttpResponseMessage> UploadFile(UploadedImage uploadedImage)
         {
-            var response = await _http.PostAsync("api/files", streamContent);
-            return response.Content.ToString();
+            return await _http.PostAsJsonAsync<UploadedImage>(APIEndpoints.s_fileUpload, uploadedImage);
         }
     }
 }

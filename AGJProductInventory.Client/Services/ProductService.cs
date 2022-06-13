@@ -1,27 +1,30 @@
 ﻿using AGJProductInventory.Client.Services.IServices;
+using AGJProductInventory.Client.Static;
 using AGJProductInventory.Client.ViewModels;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
 
 namespace AGJProductInventory.Client.Services
 {
     public class ProductService : IProductService
     {
         private readonly HttpClient _http;
-        private readonly IConfiguration _configuration;
-        private string ProductImageUrl;
-        private string ProductUrl;
+        private string _productUrl;
 
-        public ProductService(HttpClient http, IConfiguration configuration)
+        public ProductService(HttpClient http)
         {
             _http = http;
-            _configuration = configuration;
-            ProductImageUrl = _configuration.GetSection("ProductImageUrl").Value;
-            ProductUrl = "/api/products/";
+            _productUrl = APIEndpoints.s_products;
         }
 
         public Task<ProductViewModel> Add(ProductViewModel entity)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<HttpResponseMessage> AddProduct(ProductViewModel entity)
+        {
+            return await _http.PostAsJsonAsync<ProductViewModel>(_productUrl, entity);
         }
 
         public Task<ProductViewModel> Delete(ProductViewModel entity)
@@ -36,20 +39,22 @@ namespace AGJProductInventory.Client.Services
 
         public async Task<ProductViewModel> Get(int id)
         {
-            var response = await _http.GetAsync(ProductUrl + id);
-            var content = await response.Content.ReadAsStringAsync();
+            return await _http.GetFromJsonAsync<ProductViewModel>(_productUrl + "/" + id);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var product = JsonConvert.DeserializeObject<ProductViewModel>(content);
-                product.ImageUrl = ProductImageUrl + product.ImageUrl;
-                return product;
-            }
-            else
-            {
-                var errorViewModel = JsonConvert.DeserializeObject<ErrorViewModel>(content);
-                throw new Exception(errorViewModel.ErrorMessage);
-            }
+            //var response = await _http.GetAsync(_productUrl + "/" + id);
+            //var content = await response.Content.ReadAsStringAsync();
+
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    var product = JsonConvert.DeserializeObject<ProductViewModel>(content);
+            //    //product.ImageUrl = APIEndpoints.ServerBaseUrl + "/wwwroot/" + product.ImageUrl;
+            //    return product;
+            //}
+            //else
+            //{
+            //    var errorViewModel = JsonConvert.DeserializeObject<ErrorViewModel>(content);
+            //    throw new Exception(errorViewModel.ErrorMessage);
+            //}
         }
 
         public Task<IReadOnlyList<ProductViewModel>> GetAll()
@@ -59,16 +64,16 @@ namespace AGJProductInventory.Client.Services
 
         public async Task<List<ProductViewModel>> GetProductListWithDetails()
         {
-            var response = await _http.GetAsync(ProductUrl);
+            var response = await _http.GetAsync(_productUrl);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
                 var products = JsonConvert.DeserializeObject<List<ProductViewModel>>(content);
-                foreach (var product in products)
-                {
-                    product.ImageUrl = ProductImageUrl + product.ImageUrl;
-                }
+                //foreach (var product in products)
+                //{
+                //    product.ImageUrl = APIEndpoints.ServerBaseUrl + "/wwwroot/" + product.ImageUrl;
+                //}
                 return products;
             }
             else

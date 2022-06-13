@@ -10,7 +10,7 @@
 else
 {
     <MudTable ServerData="@(new Func<TableState, Task<TableData<ProductViewModel>>>(ServerReload))"
-          Dense="true" Hover="true" @ref="table">
+          Dense="true" Hover="true" Striped="true" Bordered="true" @ref="table">
         <ToolBarContent>
             <MudButton Href="product/new" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">New Product</MudButton>
             <MudButton Href="category/new" DisableElevation Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Class="ms-2">New Category</MudButton>
@@ -18,6 +18,12 @@ else
             <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
+        <ColGroup>
+            <col style="width: 27%" />
+            <col style="width: 27%" />
+            <col style="width: 7%" />
+            <col />
+        </ColGroup>
         <HeaderContent>
             <MudTh><MudTableSortLabel SortLabel="name_field" T="ProductViewModel">Name</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="category_field" T="ProductViewModel">Category</MudTableSortLabel></MudTh>
@@ -31,9 +37,9 @@ else
                 <MudCheckBox @bind-Checked="@context.IsArchived" Disabled="true"></MudCheckBox>
             </MudTd>
             <MudTd DataLabel="Actions">
-                <MudButton Href="@($"product/price/{context.Id}")" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PriceChange" Color="Color.Success">Prices</MudButton>
-                <MudButton Href="@($"product/edit/{context.Id}")" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Class="ms-1">Edit</MudButton>
-                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Class="ms-1">Delete</MudButton>
+                <MudButton Href="@($"product/price/{context.Id}")" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.PriceChange" Color="Color.Success" Class="ms-1 my-1">Prices</MudButton>
+                <MudButton Href="@($"product/edit/{context.Id}")" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Class="ms-1 my-1">Edit</MudButton>
+                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Class="ms-1 my-1">Delete</MudButton>
             </MudTd>
         </RowTemplate>
         <NoRecordsContent>
@@ -58,22 +64,10 @@ else
 
     public bool IsLoading { get; set; }
 
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    if (firstRender)
-    //    {
-    //        await LoadProducts();
-    //    }
-    //}
-
-    //private async Task LoadProducts()
-    //{
-    //    IsLoading = true;
-    //    StateHasChanged();
-    //    Products = await _productService.GetAll();
-    //    IsLoading = false;
-    //    StateHasChanged();
-    //}
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = false;
+    }
 
     private async Task<TableData<ProductViewModel>> ServerReload(TableState state)
     {

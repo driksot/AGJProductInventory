@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AGJProductInventory.Application.Common;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AGJProductInventory.API.Controllers
 {
@@ -6,25 +7,50 @@ namespace AGJProductInventory.API.Controllers
     [ApiController]
     public class FilesController : ControllerBase
     {
-        [HttpPost]
-        public async Task<IActionResult> Upload([FromForm] IFormFile file)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+
+        public FilesController(IWebHostEnvironment webHostEnvironment)
         {
-            if (file == null) return BadRequest("File is required");
+            _webHostEnvironment = webHostEnvironment;
+        }
 
-            var fileName = file.FileName;
-            var extension = Path.GetExtension(fileName);
-            var newFileName = $"{Path.GetFileNameWithoutExtension(fileName)}-{Guid.NewGuid().ToString()}{extension}";
-            var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "product");
-            var fullPath = Path.Combine(directoryPath, newFileName);
-
-            Directory.CreateDirectory(directoryPath);
-
-            using (var fileStream = new FileStream(fullPath, FileMode.Create, FileAccess.Write))
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] UploadedImage uploadedImage)
+        {
+            try
             {
-                await file.CopyToAsync(fileStream);
-            }
+                if (ModelState.IsValid == false)
+                {
+                    return BadRequest(ModelState);
+                }
 
-            return Ok($"https://localhost:7165/images/product/{newFileName}");
+                if (uploadedImage.OldImagePath != string.Empty)
+                {
+                    if (uploadedImage.OldImagePath != "images/product/placeholder.png")
+                    {
+                        string oldUploadedImageFileName = uploadedImage.OldImagePath.Split('/').Last();
+
+                        System.IO.File.Delete($"{_webHostEnvironment.ContentRootPath}\\wwwroot\\images\\product\\{oldUploadedImageFileName}");
+                    }
+                }
+
+                string guid = Guid.NewGuid().ToString();
+                string imageFileName = guid + uploadedImage.NewImageFileExtension;
+
+                string fullImageFileSystemPath = $"{_webHostEnvironment.ContentRootPath}\\wwwroot\\images\\product\\{imageFileName}";
+
+                FileStream fileStream = System.IO.File.Create(fullImageFileSystemPath);
+                byte[] imageContentAsByteArray = Convert.FromBase64String(uploadedImage.NewImageBase64Content);
+                await fileStream.WriteAsync(imageContentAsByteArray, 0, imageContentAsByteArray.Length);
+                fileStream.Close();
+
+                string relativeFilePathWithoutTrailingSlashes = $"images/product/{imageFileName}";
+                return Created("Create", relativeFilePathWithoutTrailingSlashes);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Something went wrong on our side. Please contact the administrator. Error message: {e.Message}");
+            }
         }
     }
 }

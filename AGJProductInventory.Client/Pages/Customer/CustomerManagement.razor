@@ -1,0 +1,102 @@
+﻿@page "/customer"
+@inject ICustomerService _customerService
+
+<MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"Customer Management".ToUpper())</MudText>
+
+<MudTable ServerData="@(new Func<TableState, Task<TableData<CustomerViewModel>>>(ServerReload))"
+          Dense="true" Hover="true" Striped="true" Bordered="true" @ref="table">
+    <ToolBarContent>
+        <MudButton Href="customer/new" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Class="ms-2">New Customer</MudButton>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="name_field" T="CustomerViewModel">Customer</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="address_field" T="CustomerViewModel">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="state_field" T="CustomerViewModel">State</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="since_field" T="CustomerViewModel">Since</MudTableSortLabel></MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Customer">@($"{@context.FirstName} {@context.LastName}")</MudTd>
+        <MudTd DataLabel="Address">@($"{@context.CustomerAddress.AddressLine1} {@context.CustomerAddress.AddressLine2}")</MudTd>
+        <MudTd DataLabel="State">@context.CustomerAddress.State</MudTd>
+        <MudTd DataLabel="Since">@context.DateCreated</MudTd>
+        <MudTd DataLabel="Actions">
+            <MudButton Href=@($"customer/edit/{@context.Id}") Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Class="ms-1">Edit</MudButton>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" Class="ms-1">Delete</MudButton>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<CustomerViewModel> Customers { get; set; } = new List<CustomerViewModel>();
+    private MudTable<CustomerViewModel> table;
+    private int totalItems;
+    private string searchString = null;
+
+    public bool IsLoading { get; set; }
+
+    private async Task<TableData<CustomerViewModel>> ServerReload(TableState state)
+    {
+        IEnumerable<CustomerViewModel> data = await _customerService.GetAll();
+        await Task.Delay(300);
+        data = data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.CustomerAddress.AddressLine1.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.CustomerAddress.AddressLine2.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.CustomerAddress.State.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.FirstName} {element.LastName} {element.CustomerAddress.AddressLine1} {element.CustomerAddress.AddressLine2} {element.CustomerAddress.State}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        totalItems = data.Count();
+
+        switch(state.SortLabel)
+        {
+            case "name_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.LastName);
+                break;
+            case "address_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.CustomerAddress.AddressLine1);
+                break;
+            case "state_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.CustomerAddress.State);
+                break;
+            case "since_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.DateCreated);
+                break;
+        }
+
+        Customers = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<CustomerViewModel>() { TotalItems = totalItems, Items = Customers };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using AGJProductInventory.Client.Services.IServices;
+using AGJProductInventory.Client.Static;
 using AGJProductInventory.Client.ViewModels;
 using Newtonsoft.Json;
 
@@ -7,12 +8,12 @@ namespace AGJProductInventory.Client.Services
     public class ProductVariationService : IProductVariationService
     {
         private readonly HttpClient _http;
-        private string VariationUrl;
+        private string _variationUrl;
 
         public ProductVariationService(HttpClient http)
         {
             _http = http;
-            VariationUrl = "/api/productvariations/";
+            _variationUrl = APIEndpoints.s_productVariations;
         }
 
         public Task<ProductVariationViewModel> Add(ProductVariationViewModel entity)
@@ -32,7 +33,7 @@ namespace AGJProductInventory.Client.Services
 
         public async Task<ProductVariationViewModel> Get(int id)
         {
-            var response = await _http.GetAsync(VariationUrl + id);
+            var response = await _http.GetAsync(_variationUrl + "/" + id);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
@@ -54,7 +55,7 @@ namespace AGJProductInventory.Client.Services
 
         public async Task<List<ProductVariationViewModel>> GetAllByProduct(int productId)
         {
-            var response = await _http.GetAsync(VariationUrl + $"product/{productId}");
+            var response = await _http.GetAsync(_variationUrl + $"/product/{productId}");
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)

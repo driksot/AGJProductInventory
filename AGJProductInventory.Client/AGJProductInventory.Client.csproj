@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <Folder Include="Pages\Inventory\" />
-    <Folder Include="Pages\Customer\" />
     <Folder Include="Pages\Invoice\" />
     <Folder Include="wwwroot\images\product\" />
   </ItemGroup>
