@@ -1,6 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Features.Category.Queries.GetCategoryDetailQuery;
-using AGJProductInventory.Application.Features.ProductVariation.Queries.GetProductVariationListQuery;
 
 namespace AGJProductInventory.Application.Features.Product.Queries.GetProductDetailQuery
 {
@@ -12,6 +11,5 @@ namespace AGJProductInventory.Application.Features.Product.Queries.GetProductDet
         public bool IsArchived { get; set; }
         public int CategoryId { get; set; }
         public CategoryDetailDTO Category { get; set; }
-        public ICollection<ProductVariationListDTO> ProductVariations { get; set; }
     }
 }

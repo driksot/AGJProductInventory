@@ -12,6 +12,5 @@ namespace AGJProductInventory.Application.Features.Product.Queries.GetProductLis
         public bool IsArchived { get; set; }
         public int CategoryId { get; set; }
         public CategoryListDTO Category { get; set; }
-        public ICollection<ProductVariationListDTO> ProductVariations { get; set; }
     }
 }

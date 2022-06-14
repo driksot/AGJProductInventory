@@ -3,7 +3,7 @@
 
 <MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"Product Management".ToUpper())</MudText>
 
-@if (IsLoading)
+@if (_isLoading)
 {
     <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
 }
@@ -57,16 +57,16 @@ else
 
 
 @code {
-    private IEnumerable<ProductViewModel> Products { get; set; } = new List<ProductViewModel>();
+    private IEnumerable<ProductViewModel> _products { get; set; } = new List<ProductViewModel>();
     private MudTable<ProductViewModel> table;
     private int totalItems;
     private string searchString = null;
 
-    public bool IsLoading { get; set; }
+    private bool _isLoading { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        IsLoading = false;
+        _isLoading = false;
     }
 
     private async Task<TableData<ProductViewModel>> ServerReload(TableState state)
@@ -99,8 +99,8 @@ else
                 break;
         }
 
-        Products = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
-        return new TableData<ProductViewModel>() { TotalItems = totalItems, Items = Products };
+        _products = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<ProductViewModel>() { TotalItems = totalItems, Items = _products };
     }
 
     private void OnSearch(string text)

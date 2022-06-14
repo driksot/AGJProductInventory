@@ -2,6 +2,7 @@
 using AGJProductInventory.Client.Static;
 using AGJProductInventory.Client.ViewModels;
 using Newtonsoft.Json;
+using System.Net.Http.Json;
 
 namespace AGJProductInventory.Client.Services
 {
@@ -16,9 +17,12 @@ namespace AGJProductInventory.Client.Services
             _variationUrl = APIEndpoints.s_productVariations;
         }
 
-        public Task<ProductVariationViewModel> Add(ProductVariationViewModel entity)
+        public async Task<ProductVariationViewModel> Add(ProductVariationViewModel entity)
         {
-            throw new NotImplementedException();
+            var result = await _http.PostAsJsonAsync(_variationUrl, entity);
+            var response = await result.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ProductVariationViewModel>(response);
         }
 
         public Task<ProductVariationViewModel> Delete(ProductVariationViewModel entity)

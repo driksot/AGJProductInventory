@@ -4,85 +4,91 @@
 @inject ICategoryService _categoryService
 @inject NavigationManager _navigation
 @inject ISnackbar Snackbar
-@inject HttpClient _http
 @inject IFileUploadService _fileUpload
 
 
-<MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"{Title} Product".ToUpper())</MudText>
+<MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"{_title} Product".ToUpper())</MudText>
 
-<EditForm Model="Product" OnValidSubmit="HandleValidSubmit">
-    <MudGrid>
-        <MudItem xs="9">
-            <MudCard>
-                <MudCardContent>
-                    <MudTextField @bind-Value="Product.Name" Label="Name" Variant="Variant.Outlined" Class="mb-4" />
-                    <MudTextField @bind-Value="Product.Description" Label="Description" Variant="Variant.Outlined" Lines="8" Class="mb-4" />
-                    <MudSelect T="int" @bind-Value="Product.CategoryId" Label="Category" Variant="Variant.Outlined">
-                        @foreach (var category in Categories)
-                        {
-                            <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudCardContent>
-                <MudCardActions Class="ms-2 pb-2">
-                    <MudButton Variant="Variant.Filled"
+@if (_isLoading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <EditForm Model="_product" OnValidSubmit="HandleValidSubmit">
+        <MudGrid>
+            <MudItem xs="9">
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField @bind-Value="_product.Name" Label="Name" Variant="Variant.Outlined" Class="mb-4" />
+                        <MudTextField @bind-Value="_product.Description" Label="Description" Variant="Variant.Outlined" Lines="8" Class="mb-4" />
+                        <MudSelect T="int" @bind-Value="_product.CategoryId" Label="Category" Variant="Variant.Outlined">
+                            @foreach (var category in _categories)
+                            {
+                                <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudCardContent>
+                    <MudCardActions Class="ms-2 pb-2">
+                        <MudButton Variant="Variant.Filled"
                                StartIcon="@Icons.Material.Filled.Save"
                                Color="Color.Primary"
                                ButtonType="MudBlazor.ButtonType.Submit">
-                        Save
-                    </MudButton>
-                    <MudButton Variant="Variant.Filled"
+                            Save
+                        </MudButton>
+                        <MudButton Variant="Variant.Filled"
                                StartIcon="@Icons.Material.Filled.ArrowBack"
                                Color="Color.Secondary"
                                Class="ms-2"
                                Href="/product">
-                        Back
-                    </MudButton>
-                </MudCardActions>
-            </MudCard>
-        </MudItem>
-        <MudItem xs="3">
-            <MudCard>
-                <MudCardContent Class="d-flex justify-content-center" Style="flex-direction:column">
-                    <InputFile id="uploadPhoto" OnChange="HandleImageUpload" hidden accept=".jpg, .jpeg, .png" />
+                            Back
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="3">
+                <MudCard>
+                    <MudCardContent Class="d-flex justify-content-center" Style="flex-direction:column">
+                        <InputFile id="uploadPhoto" OnChange="HandleImageUpload" hidden accept=".jpg, .jpeg, .png" />
 
-                    <MudButton HtmlTag="label"
+                        <MudButton HtmlTag="label"
                                Variant="Variant.Filled"
                                Color="Color.Primary"
                                StartIcon="@Icons.Filled.CloudUpload"
                                Class="mb-4"
                                for="uploadPhoto">
-                        Upload Photo
-                    </MudButton>
-                    <MudContainer>
-                        @if (_attemptingToUploadImage == true)
-                        {
-                            <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-                        }
-                        else if (_attemptToUploadFailed)
-                        {
-                            <MudAlert Severity="Severity.Error">Failed to upload image. @_reasonImageUploadFailed</MudAlert>
-                        }
-                        else
-                        {
-                            <img src="@($"{APIEndpoints.ServerBaseUrl}/{Product.ImageUrl}")" style="width:100%;" />
-                        }
-                    </MudContainer>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-</EditForm>
+                            Upload Photo
+                        </MudButton>
+                        <MudContainer>
+                            @if (_attemptingToUploadImage == true)
+                            {
+                                <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                            }
+                            else if (_attemptToUploadFailed)
+                            {
+                                <MudAlert Severity="Severity.Error">Failed to upload image. @_reasonImageUploadFailed</MudAlert>
+                            }
+                            else
+                            {
+                                <img src="@($"{APIEndpoints.ServerBaseUrl}/{_product.ImageUrl}")" style="width:100%;" />
+                            }
+                        </MudContainer>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+}
 
 @code {
     [Parameter]
     public int Id { get; set; }
 
-    private ProductViewModel Product { get; set; } = new ProductViewModel();
-    private IEnumerable<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
-    private string Title { get; set; } = "Add";
-    public bool IsLoading { get; set; }
-    public string OldImageUrl { get; set; }
+    private ProductViewModel _product { get; set; } = new ProductViewModel();
+    private IEnumerable<CategoryViewModel> _categories { get; set; } = new List<CategoryViewModel>();
+    private string _title { get; set; } = "Add";
+    private bool _isLoading { get; set; } = true;
+    private string _oldImageUrl { get; set; }
     List<FileData> fileDataList = new List<FileData>();
 
 
@@ -96,41 +102,34 @@
 
     private async Task LoadProduct()
     {
-        IsLoading = true;
+        _isLoading = true;
         StateHasChanged();
-        Categories = await _categoryService.GetAll();
+        _categories = await _categoryService.GetAll();
         if (Id != 0)
         {
             // update
-            Title = "Update";
-            Product = await _productService.Get(Id);
-            OldImageUrl = Product.ImageUrl;
+            _title = "Update";
+            _product = await _productService.Get(Id);
+            _oldImageUrl = _product.ImageUrl;
         }
 
-        Product.ImageUrl = "images/product/placeholder.png";
-        IsLoading = false;
+        _product.ImageUrl = "/images/product/placeholder.png";
+        _isLoading = false;
         StateHasChanged();
     }
 
     private async Task HandleValidSubmit()
     {
-        if (Product.Id == 0)
+        if (_product.Id == 0)
         {
             // Create Product
-            HttpResponseMessage response = await _productService.AddProduct(Product);
+            HttpResponseMessage response = await _productService.AddProduct(_product);
         }
         else
         {
             // Update Product
-            if (OldImageUrl != Product.ImageUrl)
-            {
-                // upload file
-            }
-
-            await _productService.Update(Product);
+            await _productService.Update(_product);
         }
-
-        //await SaveToServer();
 
         _navigation.NavigateTo("product");
     }
@@ -163,17 +162,17 @@
             string byteString = Convert.ToBase64String(imageAsByteArray);
 
             UploadedImage uploadedImage = new UploadedImage()
-			{
-				NewImageFileExtension = uploadedImageFile.Name.Substring(uploadedImageFile.Name.Length - 4),
-				NewImageBase64Content = byteString,
-				OldImagePath = string.Empty
-			};
+                {
+                    NewImageFileExtension = uploadedImageFile.Name.Substring(uploadedImageFile.Name.Length - 4),
+                    NewImageBase64Content = byteString,
+                    OldImagePath = string.Empty
+                };
 
             HttpResponseMessage response = await _fileUpload.UploadFile(uploadedImage);
 
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                Product.ImageUrl = await response.Content.ReadAsStringAsync();
+                _product.ImageUrl = await response.Content.ReadAsStringAsync();
             }
             else
             {
@@ -182,31 +181,7 @@
             }
 
             _attemptingToUploadImage = false;
-		    StateHasChanged();
+            StateHasChanged();
         }
     }
-
-    //private async Task OnFileSelection(InputFileChangeEventArgs e)
-    //{
-    //    IBrowserFile imgFile = e.File;
-    //    var buffers = new byte[imgFile.Size];
-    //    await imgFile.OpenReadStream().ReadAsync(buffers);
-    //    string imageType = imgFile.ContentType;
-    //    Product.ImageUrl =$"data:{imageType};base64,{Convert.ToBase64String(buffers)}";
-    //    fileDataList.Add(new FileData
-    //    {
-    //        Data = buffers,
-    //        FileType = imageType,
-    //        Size = imgFile.Size
-    //    });
-    //}
-
-    //private async Task SaveToServer()
-    //{
-    //    if (fileDataList.Count > 0)
-    //    {
-    //        var payload = new SaveFile { Files = fileDataList };
-    //        await _fileUpload.UploadFile(payload);
-    //    }
-    //}
 }

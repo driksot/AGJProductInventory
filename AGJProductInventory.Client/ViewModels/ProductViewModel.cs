@@ -18,6 +18,5 @@ namespace AGJProductInventory.Client.ViewModels
         [Range(1, int.MaxValue, ErrorMessage = "Please select a category")]
         public int CategoryId { get; set; }
         public CategoryViewModel Category { get; set; }
-        public ICollection<ProductVariationViewModel> ProductVariations { get; set; }
     }
 }

@@ -88,9 +88,12 @@ namespace AGJProductInventory.Client.Services
             throw new NotImplementedException();
         }
 
-        public Task<ProductViewModel> Update(ProductViewModel entity)
+        public async Task<ProductViewModel> Update(ProductViewModel entity)
         {
-            throw new NotImplementedException();
+            var result = await _http.PutAsJsonAsync($"{_productUrl}/{entity.Id}", entity);
+            var response = await result.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ProductViewModel>(response);
         }
     }
 }

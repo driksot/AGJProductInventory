@@ -14,21 +14,21 @@ else
 {
     <MudPaper Class="my-8">
         <MudGrid Class="px-4">
-            <MudItem xs="9">
+            <MudItem xs="10">
                 <MudText Class="pb-2" Typo="Typo.h4">@_product.Name.ToUpper()</MudText>
                 <MudText>Category : @_product.Category.Name</MudText> <br />
                 <MudText>Description : @_product.Description</MudText>
             </MudItem>
-            <MudItem xs="3">
-                <MudContainer>
-                    <img src="@($"{APIEndpoints.ServerBaseUrl}/{_product.ImageUrl}")" style="width:100%;" />
-                </MudContainer>
+            <MudItem xs="2">
+
+                <MudImage Src="@($"{APIEndpoints.ServerBaseUrl}/{_product.ImageUrl}")" style="width:100%;" Alt="Product Image" Elevation="25" />
+
             </MudItem>
         </MudGrid>
     </MudPaper>
 
 
-    <MudTable Items="ProductVariations" Striped="true" Hover="true" Dense="true" CanCancelEdit="true" Filter="new Func<ProductVariationViewModel, bool>(FilterFunc)"
+    <MudTable Items="_productVariations" Striped="true" Hover="true" Dense="true" CanCancelEdit="true" Filter="new Func<ProductVariationViewModel, bool>(FilterFunc)"
           @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
           OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
           RowEditCommit="ItemHasBeenCommitted">
@@ -71,7 +71,7 @@ else
     private ProductVariationViewModel elementBeforeEdit = new();
     private HashSet<ProductVariationViewModel> selectedItems1 = new HashSet<ProductVariationViewModel>();
 
-    private IEnumerable<ProductVariationViewModel> ProductVariations { get; set; } = new List<ProductVariationViewModel>();
+    private IEnumerable<ProductVariationViewModel> _productVariations { get; set; } = new List<ProductVariationViewModel>();
     private bool _isLoading { get; set; } = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -81,7 +81,7 @@ else
             _isLoading = true;
             StateHasChanged();
             _product = await _productService.Get(Id);
-            ProductVariations = await _productVariationService.GetAllByProduct(Id);
+            _productVariations = await _productVariationService.GetAllByProduct(Id);
             _isLoading = false;
             StateHasChanged();
         }
