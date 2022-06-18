@@ -40,12 +40,12 @@
 
 
 @code {
-    private IEnumerable<CategoryViewModel> Categories { get; set; } = new List<CategoryViewModel>();
+    private IEnumerable<CategoryViewModel> _categories { get; set; } = new List<CategoryViewModel>();
     private MudTable<CategoryViewModel> table;
     private int totalItems;
     private string searchString = null;
 
-    public bool IsLoading { get; set; }
+    public bool _isLoading { get; set; }
 
     private async Task<TableData<CategoryViewModel>> ServerReload(TableState state)
     {
@@ -65,8 +65,8 @@
 
         data = data.OrderByDirection(state.SortDirection, o => o.Name);
 
-        Categories = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
-        return new TableData<CategoryViewModel>() { TotalItems = totalItems, Items = Categories };
+        _categories = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<CategoryViewModel>() { TotalItems = totalItems, Items = _categories };
     }
 
     private void OnSearch(string text)
@@ -80,10 +80,10 @@
         var parameters = new DialogParameters();
         if (id != 0)
         {
-            var category = Categories.FirstOrDefault(q => q.Id == id);
+            var category = _categories.FirstOrDefault(q => q.Id == id);
             if (category != null)
             {
-                parameters.Add(nameof(AddEditCategoryModal.Category), new CategoryViewModel
+                parameters.Add(nameof(AddEditCategoryModal._category), new CategoryViewModel
                 {
                     Id = category.Id,
                     Name = category.Name

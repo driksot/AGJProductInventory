@@ -17,12 +17,12 @@ namespace AGJProductInventory.Client.Services
             _categoryUrl = APIEndpoints.s_categories;
         }
 
-        public async Task<CategoryViewModel> Add(CategoryViewModel entity)
+        public async Task<CategoryViewModel> Create(CategoryViewModel categoryViewModel)
         {
             try
             {
                 using var request = new HttpRequestMessage();
-                var content = new StringContent(JsonConvert.SerializeObject(entity));
+                var content = new StringContent(JsonConvert.SerializeObject(categoryViewModel));
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
                 request.Content = content;
                 request.Method = HttpMethod.Post;
@@ -34,25 +34,19 @@ namespace AGJProductInventory.Client.Services
                 var category = JsonConvert.DeserializeObject<CategoryViewModel>(response);
 
                 if (category == null) throw new Exception(); // TODO: create null exception
-                    
+
                 return category;
             }
             catch (Exception ex)
             {
-                return entity;
+                return categoryViewModel;
             }
         }
 
-        public async Task<CategoryViewModel> Delete(CategoryViewModel entity)
+        public async Task<int> Delete(int id)
         {
-            var categoryId = entity.Id;
-            var response = await _http.GetAsync(_categoryUrl + categoryId);
-            var content = await response.Content.ReadAsStringAsync();
-
-            await _http.DeleteAsync(_categoryUrl + categoryId);
-
-            var category = JsonConvert.DeserializeObject<CategoryViewModel>(content);
-            return category;
+            await _http.DeleteAsync(_categoryUrl + id);
+            return id;
         }
 
         public Task<bool> Exists(int id)
@@ -77,7 +71,7 @@ namespace AGJProductInventory.Client.Services
             }
         }
 
-        public async Task<IReadOnlyList<CategoryViewModel>> GetAll()
+        public async Task<IEnumerable<CategoryViewModel>> GetAll()
         {
             var response = await _http.GetAsync(_categoryUrl);
             var content = await response.Content.ReadAsStringAsync();

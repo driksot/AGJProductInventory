@@ -1,0 +1,103 @@
+﻿@*@page "/inventory"
+@inject IInventoryService _inventoryService
+
+<MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"Inventory Management".ToUpper())</MudText>
+
+<MudTable ServerData="@(new Func<TableState, Task<TableData<InventoryViewModel>>>(ServerReload))"
+          Dense="true" Hover="true" Striped="true" Bordered="true" @ref="table">
+    <ToolBarContent>
+        <MudButton Href="customer/new" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Class="ms-2">New Customer</MudButton>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <ColGroup>
+
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="product_field" T="InventoryViewModel">Product</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="category_field" T="InventoryViewModel">Category</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="size_field" T="InventoryViewModel">Size</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="quantity_field" T="InventoryViewModel">Quantity On Hand</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="price_field" T="InventoryViewModel">Unit Price</MudTableSortLabel></MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Product">@context.Product.Name</MudTd>
+        <MudTd DataLabel="Category">@context.Product.Category.Name</MudTd>
+        <MudTd DataLabel="Size">@context.ProductVariation.Size</MudTd>
+        <MudTd DataLabel="Quantity">@context.QuantityOnHand</MudTd>
+        <MudTd DataLabel="Price">@context.ProductVariation.Price</MudTd>
+        <MudTd DataLabel="Actions">
+            <MudButton Href=@($"inventory/edit/{@context.Id}") Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Edit" Color="Color.Primary" Class="ms-1">Edit</MudButton>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<InventoryViewModel> _inventoryList { get; set; } = new List<InventoryViewModel>();
+    private MudTable<InventoryViewModel> table;
+    private int totalItems;
+    private string searchString = null;
+
+    public bool IsLoading { get; set; }
+
+    private async Task<TableData<InventoryViewModel>> ServerReload(TableState state)
+    {
+        IEnumerable<InventoryViewModel> data = await _inventoryService.GetAll();
+        await Task.Delay(300);
+        data = data.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Product.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.Product.Category.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.ProductVariation.Size.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.Product.Name} {element.Product.Category.Name} {element.ProductVariation.Size}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        totalItems = data.Count();
+
+        switch(state.SortLabel)
+        {
+            case "product_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.Product.Name);
+                break;
+            case "category_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.Product.Category.Name);
+                break;
+            case "size_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.ProductVariation.Size);
+                break;
+            case "quantity_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.QuantityOnHand);
+                break;
+            case "price_field":
+                data = data.OrderByDirection(state.SortDirection, o => o.ProductVariation.Price);
+                break;
+        }
+
+        _inventoryList = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<InventoryViewModel>() { TotalItems = totalItems, Items = _inventoryList };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+}
+*@

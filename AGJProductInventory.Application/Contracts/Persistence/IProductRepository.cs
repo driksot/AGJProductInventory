@@ -1,10 +1,13 @@
-﻿using AGJProductInventory.Domain;
+﻿using AGJProductInventory.Application.DTOs;
 
 namespace AGJProductInventory.Application.Contracts.Persistence
 {
-    public interface IProductRepository : IGenericRepository<Product>
+    public interface IProductRepository
     {
-        Task<Product> GetProductWithDetails(int id);
-        Task<List<Product>> GetProductListWithDetails();
+        Task<ProductDTO> Get(int id);
+        Task<IEnumerable<ProductDTO>> GetAll();
+        public Task<ProductDTO> Create(ProductDTO productDTO);
+        public Task<ProductDTO> Update(ProductDTO productDTO);
+        public Task<int> Archive(int id);
     }
 }

@@ -1,14 +1,15 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventoryListQuery
 {
-    public class GetProductInventoryListQuery : IRequest<List<ProductInventoryListDTO>>
+    public class GetProductInventoryListQuery : IRequest<List<ProductInventoryDTO>>
     {
     }
 
-    public class GetProductInventoryListQueryHandler : IRequestHandler<GetProductInventoryListQuery, List<ProductInventoryListDTO>>
+    public class GetProductInventoryListQueryHandler : IRequestHandler<GetProductInventoryListQuery, List<ProductInventoryDTO>>
     {
         private readonly IProductInventoryRepository _productInventoryRepository;
         private readonly IMapper _mapper;
@@ -19,10 +20,10 @@ namespace AGJProductInventory.Application.Features.ProductInventory.Queries.GetP
             _mapper = mapper;
         }
 
-        public async Task<List<ProductInventoryListDTO>> Handle(GetProductInventoryListQuery request, CancellationToken cancellationToken)
+        public async Task<List<ProductInventoryDTO>> Handle(GetProductInventoryListQuery request, CancellationToken cancellationToken)
         {
-            var inventoryList = await _productInventoryRepository.GetProductInventoryListWithDetails();
-            return _mapper.Map<List<ProductInventoryListDTO>>(inventoryList);
+            var inventoryList = await _productInventoryRepository.GetCurrentInventory();
+            return _mapper.Map<List<ProductInventoryDTO>>(inventoryList);
         }
     }
 }

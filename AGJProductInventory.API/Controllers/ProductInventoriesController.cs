@@ -1,4 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
+using AGJProductInventory.Application.DTOs;
 using AGJProductInventory.Application.Features.ProductInventory.Commands.UpdateProductInventoryUnitsCommand;
 using AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventoryDetailQuery;
 using AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventoryListQuery;
@@ -23,7 +24,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET: api/<ProductInventoriesController>
         [HttpGet]
-        public async Task<ActionResult<List<ProductInventoryListDTO>>> Get()
+        public async Task<ActionResult<List<ProductInventoryDTO>>> Get()
         {
             var inventoryList = await _mediator.Send(new GetProductInventoryListQuery());
             return Ok(inventoryList);
@@ -31,7 +32,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET api/<ProductInventoriesController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductInventoryDetailDTO>> Get(int id)
+        public async Task<ActionResult<ProductInventoryDTO>> Get(int id)
         {
             var inventory = await _mediator.Send(new GetProductInventoryDetailQuery { Id = id });
             return Ok(inventory);
@@ -39,7 +40,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET api/<ProductInventoriesController>/snapshot
         [HttpGet("snapshot")]
-        public async Task<ActionResult<List<ProductInventorySnapshotListDTO>>> GetSnapshot()
+        public async Task<ActionResult<List<ProductInventorySnapshotDTO>>> GetSnapshot()
         {
             var snapshots = await _mediator.Send(new GetProductInventorySnapshotQuery());
             return Ok(snapshots);
@@ -47,7 +48,7 @@ namespace AGJProductInventory.API.Controllers
 
         // PUT api/<ProductInventoriesController>/inventory/5
         [HttpPut("inventory/{id}")]
-        public async Task<ActionResult<BaseCommandResponse<UpdateProductInventoryUnitsDTO>>> PutInventory(int id, [FromBody] UpdateProductInventoryUnitsDTO productInventoryDTO)
+        public async Task<ActionResult<BaseCommandResponse<ProductInventoryUpdateDTO>>> PutInventory(int id, [FromBody] ProductInventoryUpdateDTO productInventoryDTO)
         {
             var command = new UpdateProductInventoryUnitsCommand { Id = id, ProductInventoryDTO = productInventoryDTO };
             var response = await _mediator.Send(command);

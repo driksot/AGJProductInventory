@@ -15,11 +15,9 @@ namespace AGJProductInventory.Persistence
                 options.UseSqlServer(configuration.GetConnectionString("InventoryConnectionString"));
             });
 
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductVariationRepository, ProductVariationRepository>();
-            services.AddScoped<ICustomerAddressRepository, CustomerAddressRepository>();
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<IProductInventoryRepository, ProductInventoryRepository>();
 

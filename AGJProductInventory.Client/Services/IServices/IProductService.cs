@@ -2,10 +2,12 @@
 
 namespace AGJProductInventory.Client.Services.IServices
 {
-    public interface IProductService : IGenericRepository<ProductViewModel>
+    public interface IProductService
     {
-        Task<ProductViewModel> GetProductWithDetails(int id);
-        Task<List<ProductViewModel>> GetProductListWithDetails();
-        Task<HttpResponseMessage> AddProduct(ProductViewModel entity);
+        Task<ProductViewModel> Get(int id);
+        Task<IEnumerable<ProductViewModel>> GetAll();
+        public Task<ProductViewModel> Create(ProductViewModel productViewModel);
+        public Task<ProductViewModel> Update(ProductViewModel productViewModel);
+        public Task<int> Archive(int id);
     }
 }

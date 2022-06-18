@@ -1,23 +1,23 @@
 ﻿@inject ICategoryService _categoryService
 
-<EditForm Model="Category" OnInvalidSubmit="SaveAsync">
+<EditForm Model="_category" OnInvalidSubmit="SaveAsync">
     <MudDialog>
         <TitleContent>
             <MudText Typo="Typo.h6">
                 <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3 mb-n1" />
-                @($"{Title} Category".ToUpper())
+                @($"{_title} Category".ToUpper())
             </MudText>
         </TitleContent>
         <DialogContent>
             <MudGrid>
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="Category.Name" T="string" Label="Name" Required />
+                    <MudTextField @bind-Value="_category.Name" T="string" Label="Name" Required />
                 </MudItem>
             </MudGrid>
         </DialogContent>
         <DialogActions>
             <MudButton DisableElevation Variant="Variant.Filled" OnClick="Cancel">Cancel</MudButton>
-            @if (Category.Id != 0)
+            @if (_category.Id != 0)
             {
                 <MudButton DisableElevation Variant="Variant.Filled" ButtonType="ButtonType.Submit" Color="Color.Secondary">Update</MudButton>
             }
@@ -35,9 +35,9 @@
 
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    public CategoryViewModel Category { get; set; } = new CategoryViewModel();
-    private string Title = "Add";
-    public bool IsLoading { get; set; }
+    public CategoryViewModel _category { get; set; } = new CategoryViewModel();
+    private string _title = "Add";
+    public bool _isLoading { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -46,12 +46,12 @@
             if (Id == 0)
             {
                 // create
-                IsLoading = false;
+                _isLoading = false;
             }
             else
             {
                 // update
-                Title = "Update";
+                _title = "Update";
                 await LoadCategory();
             }
         }
@@ -59,10 +59,10 @@
 
     private async Task LoadCategory()
     {
-        IsLoading = true;
+        _isLoading = true;
         StateHasChanged();
-        Category = await _categoryService.Get(Id);
-        IsLoading = false;
+        _category = await _categoryService.Get(Id);
+        _isLoading = false;
         StateHasChanged();
     }
 
@@ -73,15 +73,15 @@
 
     private async Task SaveAsync()
     {
-        if (Category.Id == 0)
+        if (_category.Id == 0)
         {
             // Create Category
-            await _categoryService.Add(Category);
+            await _categoryService.Create(_category);
         }
         else
         {
             // Update Category
-            await _categoryService.Update(Category);
+            await _categoryService.Update(_category);
         }
 
         MudDialog.Close();

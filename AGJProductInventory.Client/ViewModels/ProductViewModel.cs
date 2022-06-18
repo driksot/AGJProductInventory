@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AGJProductInventory.Client.ViewModels
 {
-    public class ProductViewModel : IProductDTO
+    public class ProductViewModel
     {
         public int Id { get; set; }
 

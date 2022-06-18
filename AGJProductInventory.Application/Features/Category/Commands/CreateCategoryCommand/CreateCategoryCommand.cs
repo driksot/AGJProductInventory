@@ -1,16 +1,17 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Category.Commands.CreateCategoryCommand
 {
-    public class CreateCategoryCommand : IRequest<BaseCommandResponse<CreateCategoryDTO>>
+    public class CreateCategoryCommand : IRequest<BaseCommandResponse<CategoryDTO>>
     {
-        public CreateCategoryDTO CategoryDTO { get; set; }
+        public CategoryDTO CategoryDTO { get; set; }
     }
 
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, BaseCommandResponse<CreateCategoryDTO>>
+    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, BaseCommandResponse<CategoryDTO>>
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
@@ -21,10 +22,10 @@ namespace AGJProductInventory.Application.Features.Category.Commands.CreateCateg
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<CreateCategoryDTO>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<CategoryDTO>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<CreateCategoryDTO>();
-            var validator = new CreateCategoryDTOValidator();
+            var response = new BaseCommandResponse<CategoryDTO>();
+            var validator = new CategoryDTOValidator();
             var validationResult = await validator.ValidateAsync(request.CategoryDTO);
 
             if (!validationResult.IsValid)
@@ -37,12 +38,11 @@ namespace AGJProductInventory.Application.Features.Category.Commands.CreateCateg
             }
             else
             {
-                var category = _mapper.Map<Domain.Category>(request.CategoryDTO);
 
-                category = await _categoryRepository.Add(category);
+                var category = await _categoryRepository.Create(request.CategoryDTO);
 
                 response.IsSuccess = true;
-                response.Data = _mapper.Map<CreateCategoryDTO>(category);
+                response.Data = _mapper.Map<CategoryDTO>(category);
                 response.Time = DateTime.UtcNow;
                 response.Message = "Category creation successful.";
                 response.Errors = null;

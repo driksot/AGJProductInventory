@@ -1,70 +1,86 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AGJProductInventory.Domain;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace AGJProductInventory.Persistence.Repositories
 {
-    public class ProductInventoryRepository : GenericRepository<ProductInventory>, IProductInventoryRepository
+    public class ProductInventoryRepository : IProductInventoryRepository
     {
         private readonly InventoryManagementDbContext _dbContext;
+        private readonly IMapper _mapper;
 
-        public ProductInventoryRepository(InventoryManagementDbContext dbContext) : base(dbContext)
+        public ProductInventoryRepository(InventoryManagementDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
 
-        public async Task<List<ProductInventory>> GetProductInventoryListWithDetails()
+        public async Task<ProductInventoryDTO> GetByProductId(int productId)
+        {
+            var inventory = await _dbContext.ProductInventories
+                .Include(inv => inv.Product)
+                .Include(inv => inv.Product.Category)
+                .Include(inv => inv.Product.ProductVariations)
+                .FirstOrDefaultAsync(inv => inv.ProductId == productId);
+            return _mapper.Map<ProductInventoryDTO>(inventory);
+        }
+
+        public async Task<IEnumerable<ProductInventoryDTO>> GetCurrentInventory()
         {
             var inventoryList = await _dbContext.ProductInventories
-                .Include(q => q.ProductVariation)
-                .Where(q => !q.ProductVariation.Product.IsArchived)
+                .Include(inv => inv.Product)
+                .Include(inv => inv.Product.Category)
+                .Include(inv => inv.Product.ProductVariations)
+                .Where(inv => !inv.Product.IsArchived)
                 .ToListAsync();
-            return inventoryList;
+            return _mapper.Map<IEnumerable<ProductInventoryDTO>>(inventoryList);
         }
 
-        public async Task<List<ProductInventorySnapshot>> GetProductInventorySnapshots()
+        public Task<IEnumerable<ProductInventorySnapshotDTO>> GetSnapshotHistory()
         {
-            var start = DateTime.UtcNow - TimeSpan.FromDays(7);
-            var snapshots = await _dbContext.ProductInventorySnapshots
-                .Include(q => q.ProductVariation)
-                .Where(q => q.SnapshotTime > start && !q.ProductVariation.Product.IsArchived)
-                .ToListAsync();
-            return snapshots;
+            throw new NotImplementedException();
         }
 
-        public async Task<ProductInventory> GetProductInventoryWithDetails(int id)
+        public async Task<ProductInventoryDTO> UpdateUnitsAvailable(int id, int adjustment)
         {
             var inventory = await _dbContext.ProductInventories
-                .Include(q => q.ProductVariation)
-                .FirstOrDefaultAsync(q => q.ProductVariationId == id);
-            return inventory;
-        }
-
-        public async Task<ProductInventory> UpdateProductInventoryUnitsAvailable(int id, int adjustment)
-        {
-            var inventory = await _dbContext.ProductInventories
-                .Include(q => q.ProductVariation)
-                .FirstOrDefaultAsync(q => q.ProductVariationId == id);
+                .Include(inv => inv.Product)
+                .Include(inv => inv.Product.Category)
+                .Include(inv => inv.Product.ProductVariations)
+                .FirstOrDefaultAsync(inv => inv.ProductId == id);
 
             inventory.QuantityOnHand += adjustment;
 
-            await CreateProductInventorySnapShot(inventory);
+            await CreateProductInventorySnapShot();
 
             await _dbContext.SaveChangesAsync();
 
-            return inventory;
+            var inventoryDTO = _mapper.Map<ProductInventoryDTO>(inventory);
+
+            return inventoryDTO;
         }
 
-        private async Task CreateProductInventorySnapShot(ProductInventory productInventory)
+        private async Task CreateProductInventorySnapShot()
         {
-            var snapshot = new ProductInventorySnapshot()
-            {
-                ProductVariation = productInventory.ProductVariation,
-                QuantityOnHand = productInventory.QuantityOnHand,
-                SnapshotTime = DateTime.UtcNow
-            };
+            var inventories = await _dbContext.ProductInventories
+                .Include(inv => inv.Product)
+                .Include(inv => inv.Product.Category)
+                .Include(inv => inv.Product.ProductVariations)
+                .ToListAsync();
 
-            await _dbContext.AddAsync(snapshot);
+            foreach (var inventory in inventories)
+            {
+                var snapshot = new ProductInventorySnapshot
+                {
+                    Product = inventory.Product,
+                    QuantityOnHand = inventory.QuantityOnHand,
+                    SnapshotTime = DateTime.UtcNow
+                };
+
+                await _dbContext.AddAsync(snapshot);
+            }  
         }
     }
 }

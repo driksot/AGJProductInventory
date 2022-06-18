@@ -33,7 +33,7 @@ namespace AGJProductInventory.Application.Features.ProductVariation.Commands.Del
             }
             else
             {
-                await _productVariationRepository.Delete(productVariation);
+                await _productVariationRepository.Delete(productVariation.Id);
 
                 response.IsSuccess = true;
                 response.Data = request.Id;

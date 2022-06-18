@@ -1,37 +1,35 @@
 ﻿
 using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Customer.Commands.UpdateCustomerCommand
 {
-    public class UpdateCustomerCommand : IRequest<BaseCommandResponse<UpdateCustomerDTO>>
+    public class UpdateCustomerCommand : IRequest<BaseCommandResponse<CustomerDTO>>
     {
         public int Id { get; set; }
-        public UpdateCustomerDTO CustomerDTO { get; set; }
+        public CustomerDTO CustomerDTO { get; set; }
     }
 
-    public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand, BaseCommandResponse<UpdateCustomerDTO>>
+    public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerCommand, BaseCommandResponse<CustomerDTO>>
     {
         private readonly ICustomerRepository _customerRepository;
-        private readonly ICustomerAddressRepository _customerAddressRepository;
         private readonly IMapper _mapper;
 
         public UpdateCustomerCommandHandler(
             ICustomerRepository customerRepository,
-            ICustomerAddressRepository customerAddressRepository,
             IMapper mapper)
         {
             _customerRepository = customerRepository;
-            _customerAddressRepository = customerAddressRepository;
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<UpdateCustomerDTO>> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<CustomerDTO>> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<UpdateCustomerDTO>();
-            var validator = new UpdateCustomerDTOValidator(_customerAddressRepository);
+            var response = new BaseCommandResponse<CustomerDTO>();
+            var validator = new CustomerDTOValidator();
             var validationResult = await validator.ValidateAsync(request.CustomerDTO);
 
             if (!validationResult.IsValid)
@@ -53,7 +51,7 @@ namespace AGJProductInventory.Application.Features.Customer.Commands.UpdateCusto
                 }
 
                 response.IsSuccess = true;
-                response.Data = _mapper.Map<UpdateCustomerDTO>(customer);
+                response.Data = _mapper.Map<CustomerDTO>(customer);
                 response.Time = DateTime.UtcNow;
                 response.Message = "Category creation successful.";
                 response.Errors = null;

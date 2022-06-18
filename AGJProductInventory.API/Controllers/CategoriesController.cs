@@ -1,4 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
+using AGJProductInventory.Application.DTOs;
 using AGJProductInventory.Application.Features.Category.Commands.CreateCategoryCommand;
 using AGJProductInventory.Application.Features.Category.Commands.DeleteCategoryCommand;
 using AGJProductInventory.Application.Features.Category.Commands.UpdateCategoryCommand;
@@ -25,7 +26,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET: api/<CategoriesController>
         [HttpGet]
-        public async Task<ActionResult<List<CategoryListDTO>>> Get()
+        public async Task<ActionResult<List<CategoryDTO>>> Get()
         {
             var categories = await _mediator.Send(new GetCategoryListQuery());
             return Ok(categories);
@@ -33,7 +34,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET api/<CategoriesController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDetailDTO>> Get(int id)
+        public async Task<ActionResult<CategoryDTO>> Get(int id)
         {
             var category = await _mediator.Send(new GetCategoryDetailQuery { Id = id });
             return Ok(category);
@@ -41,7 +42,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<CategoriesController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse<CreateCategoryDTO>>> Post([FromBody] CreateCategoryDTO categoryDTO)
+        public async Task<ActionResult<BaseCommandResponse<CategoryDTO>>> Post([FromBody] CategoryDTO categoryDTO)
         {
             var command = new CreateCategoryCommand { CategoryDTO = categoryDTO };
             var response = await _mediator.Send(command);
@@ -50,7 +51,7 @@ namespace AGJProductInventory.API.Controllers
 
         // PUT api/<CategoriesController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<BaseCommandResponse<UpdateCategoryDTO>>> Put(int id, [FromBody] UpdateCategoryDTO categoryDTO)
+        public async Task<ActionResult<BaseCommandResponse<CategoryDTO>>> Put(int id, [FromBody] CategoryDTO categoryDTO)
         {
             var command = new UpdateCategoryCommand { Id = id, CategoryDTO = categoryDTO };
             var response = await _mediator.Send(command);

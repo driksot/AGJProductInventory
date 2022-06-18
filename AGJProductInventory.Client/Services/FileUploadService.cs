@@ -1,7 +1,6 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Client.Services.IServices;
 using AGJProductInventory.Client.Static;
-using AGJProductInventory.Client.ViewModels;
 using System.Net.Http.Json;
 
 namespace AGJProductInventory.Client.Services

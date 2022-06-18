@@ -43,7 +43,7 @@
 </MudTable>
 
 @code {
-    private IEnumerable<CustomerViewModel> Customers { get; set; } = new List<CustomerViewModel>();
+    private IEnumerable<CustomerViewModel> _customers { get; set; } = new List<CustomerViewModel>();
     private MudTable<CustomerViewModel> table;
     private int totalItems;
     private string searchString = null;
@@ -90,8 +90,8 @@
                 break;
         }
 
-        Customers = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
-        return new TableData<CustomerViewModel>() { TotalItems = totalItems, Items = Customers };
+        _customers = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<CustomerViewModel>() { TotalItems = totalItems, Items = _customers };
     }
 
     private void OnSearch(string text)

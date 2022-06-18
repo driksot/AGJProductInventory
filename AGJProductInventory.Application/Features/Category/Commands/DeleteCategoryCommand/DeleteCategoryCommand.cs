@@ -33,7 +33,7 @@ namespace AGJProductInventory.Application.Features.Category.Commands.DeleteCateg
             }
             else
             {
-                await _categoryRepository.Delete(category);
+                await _categoryRepository.Delete(category.Id);
 
                 response.IsSuccess = true;
                 response.Data = request.Id;

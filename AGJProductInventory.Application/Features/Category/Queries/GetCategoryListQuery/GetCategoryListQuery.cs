@@ -1,14 +1,15 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Category.Queries.GetCategoriesListQuery
 {
-    public class GetCategoryListQuery : IRequest<List<CategoryListDTO>>
+    public class GetCategoryListQuery : IRequest<List<CategoryDTO>>
     {
     }
 
-    public class GetCategoriesListQueryHandler : IRequestHandler<GetCategoryListQuery, List<CategoryListDTO>>
+    public class GetCategoriesListQueryHandler : IRequestHandler<GetCategoryListQuery, List<CategoryDTO>>
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
@@ -19,10 +20,10 @@ namespace AGJProductInventory.Application.Features.Category.Queries.GetCategorie
             _mapper = mapper;
         }
 
-        public async Task<List<CategoryListDTO>> Handle(GetCategoryListQuery request, CancellationToken cancellationToken)
+        public async Task<List<CategoryDTO>> Handle(GetCategoryListQuery request, CancellationToken cancellationToken)
         {
             var categories = await _categoryRepository.GetAll();
-            return _mapper.Map<List<CategoryListDTO>>(categories);
+            return _mapper.Map<List<CategoryDTO>>(categories);
         }
     }
 }

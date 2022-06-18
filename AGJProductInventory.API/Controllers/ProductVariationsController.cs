@@ -1,4 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
+using AGJProductInventory.Application.DTOs;
 using AGJProductInventory.Application.Features.ProductVariation.Commands.CreateProductVariationCommand;
 using AGJProductInventory.Application.Features.ProductVariation.Commands.DeleteProductVariationCommand;
 using AGJProductInventory.Application.Features.ProductVariation.Commands.UpdateProductVariationCommand;
@@ -24,7 +25,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET: api/<ProductVariationsController>
         [HttpGet("product/{id}")]
-        public async Task<ActionResult<List<ProductVariationListDTO>>> GetAllByProduct(int id)
+        public async Task<ActionResult<List<ProductVariationDTO>>> GetAllByProduct(int id)
         {
             var productVariations = await _mediator.Send(new GetProductVariationListQuery { ProductId = id });
             return Ok(productVariations);
@@ -32,7 +33,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET api/<ProductVariationsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductVariationDetailDTO>> Get(int id)
+        public async Task<ActionResult<ProductVariationDTO>> Get(int id)
         {
             var productVariation = await _mediator.Send(new GetProductVariationDetailQuery { Id = id });
             return Ok(productVariation);
@@ -40,7 +41,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<ProductVariationsController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse<CreateProductVariationDTO>>> Post([FromBody] CreateProductVariationDTO productVariationDTO)
+        public async Task<ActionResult<BaseCommandResponse<ProductVariationDTO>>> Post([FromBody] ProductVariationDTO productVariationDTO)
         {
             var command = new CreateProductVariationCommand { ProductVariationDTO = productVariationDTO };
             var response = await _mediator.Send(command);
@@ -49,7 +50,7 @@ namespace AGJProductInventory.API.Controllers
 
         // PUT api/<ProductVariationsController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<BaseCommandResponse<UpdateProductVariationDTO>>> Put(int id, [FromBody] UpdateProductVariationDTO productVariationDTO)
+        public async Task<ActionResult<BaseCommandResponse<ProductVariationDTO>>> Put(int id, [FromBody] ProductVariationDTO productVariationDTO)
         {
             var command = new UpdateProductVariationCommand { Id = id, ProductVariationDTO = productVariationDTO };
             var response = await _mediator.Send(command);

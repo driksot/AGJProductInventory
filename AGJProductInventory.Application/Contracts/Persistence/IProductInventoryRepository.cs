@@ -1,13 +1,13 @@
-﻿using AGJProductInventory.Domain;
+﻿using AGJProductInventory.Application.DTOs;
 
 namespace AGJProductInventory.Application.Contracts.Persistence
 {
-    public interface IProductInventoryRepository : IGenericRepository<ProductInventory>
+    public interface IProductInventoryRepository
     {
-        Task<List<ProductInventory>> GetProductInventoryListWithDetails();
-        Task<ProductInventory> GetProductInventoryWithDetails(int id);
-        Task<ProductInventory> UpdateProductInventoryUnitsAvailable(int id, int adjustment);
-        Task<List<ProductInventorySnapshot>> GetProductInventorySnapshots();
+        public Task<IEnumerable<ProductInventoryDTO>> GetCurrentInventory();
+        public Task<ProductInventoryDTO> UpdateUnitsAvailable(int id, int adjustment);
+        public Task<ProductInventoryDTO> GetByProductId(int productId);
+        public Task<IEnumerable<ProductInventorySnapshotDTO>> GetSnapshotHistory();
 
     }
 }

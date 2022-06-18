@@ -1,14 +1,15 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Customer.Queries.GetCustomerListQuery
 {
-    public class GetCustomerListQuery : IRequest<List<CustomerListDTO>>
+    public class GetCustomerListQuery : IRequest<List<CustomerDTO>>
     {
     }
 
-    public class GetCustomerListQueryHandler : IRequestHandler<GetCustomerListQuery, List<CustomerListDTO>>
+    public class GetCustomerListQueryHandler : IRequestHandler<GetCustomerListQuery, List<CustomerDTO>>
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
@@ -19,10 +20,10 @@ namespace AGJProductInventory.Application.Features.Customer.Queries.GetCustomerL
             _mapper = mapper;
         }
 
-        public async Task<List<CustomerListDTO>> Handle(GetCustomerListQuery request, CancellationToken cancellationToken)
+        public async Task<List<CustomerDTO>> Handle(GetCustomerListQuery request, CancellationToken cancellationToken)
         {
-            var customers = await _customerRepository.GetCustomerListWithDetails();
-            return _mapper.Map<List<CustomerListDTO>>(customers);
+            var customers = await _customerRepository.GetAll();
+            return _mapper.Map<List<CustomerDTO>>(customers);
         }
     }
 }

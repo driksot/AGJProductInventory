@@ -1,4 +1,3 @@
-global using AGJProductInventory.Application.Contracts.Persistence;
 using AGJProductInventory.Client;
 using AGJProductInventory.Client.Services;
 using AGJProductInventory.Client.Services.IServices;
@@ -16,7 +15,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductVariationService, ProductVariationService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<ICustomerAddressService, CustomerAddressService>();
+builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 builder.Services.AddMudServices();

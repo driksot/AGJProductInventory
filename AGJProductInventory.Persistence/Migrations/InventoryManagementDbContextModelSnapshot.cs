@@ -298,7 +298,7 @@ namespace AGJProductInventory.Persistence.Migrations
                     b.Property<DateTime?>("LastModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProductVariationId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("QuantityOnHand")
@@ -306,7 +306,7 @@ namespace AGJProductInventory.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductVariationId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductInventories");
                 });
@@ -319,7 +319,7 @@ namespace AGJProductInventory.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ProductVariationId")
+                    b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("QuantityOnHand")
@@ -330,7 +330,7 @@ namespace AGJProductInventory.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductVariationId");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductInventorySnapshots");
                 });
@@ -422,24 +422,24 @@ namespace AGJProductInventory.Persistence.Migrations
 
             modelBuilder.Entity("AGJProductInventory.Domain.ProductInventory", b =>
                 {
-                    b.HasOne("AGJProductInventory.Domain.ProductVariation", "ProductVariation")
+                    b.HasOne("AGJProductInventory.Domain.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductVariationId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProductVariation");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("AGJProductInventory.Domain.ProductInventorySnapshot", b =>
                 {
-                    b.HasOne("AGJProductInventory.Domain.ProductVariation", "ProductVariation")
+                    b.HasOne("AGJProductInventory.Domain.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductVariationId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProductVariation");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("AGJProductInventory.Domain.ProductVariation", b =>

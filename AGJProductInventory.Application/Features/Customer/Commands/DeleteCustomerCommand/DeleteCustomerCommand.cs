@@ -36,7 +36,7 @@ namespace AGJProductInventory.Application.Features.Customer.Commands.DeleteCusto
             }
             else
             {
-                await _customerRepository.Delete(customer);
+                await _customerRepository.Delete(customer.Id);
 
                 response.IsSuccess = true;
                 response.Data = request.Id;

@@ -17,15 +17,20 @@ namespace AGJProductInventory.Client.Services
             _variationUrl = APIEndpoints.s_productVariations;
         }
 
-        public async Task<ProductVariationViewModel> Add(ProductVariationViewModel entity)
+        public async Task<ProductVariationViewModel> Create(ProductVariationViewModel productVariationViewModel)
         {
-            var result = await _http.PostAsJsonAsync(_variationUrl, entity);
+            var result = await _http.PostAsJsonAsync(_variationUrl, productVariationViewModel);
             var response = await result.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<ProductVariationViewModel>(response);
         }
 
         public Task<ProductVariationViewModel> Delete(ProductVariationViewModel entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> Delete(int id)
         {
             throw new NotImplementedException();
         }
@@ -52,19 +57,14 @@ namespace AGJProductInventory.Client.Services
             }
         }
 
-        public Task<IReadOnlyList<ProductVariationViewModel>> GetAll()
+        public async Task<IEnumerable<ProductVariationViewModel>> GetAll(int? id = null)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<ProductVariationViewModel>> GetAllByProduct(int productId)
-        {
-            var response = await _http.GetAsync(_variationUrl + $"/product/{productId}");
+            var response = await _http.GetAsync(_variationUrl + $"/product/{id}");
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                var variations = JsonConvert.DeserializeObject<List<ProductVariationViewModel>>(content);
+                var variations = JsonConvert.DeserializeObject<IEnumerable<ProductVariationViewModel>>(content);
                 return variations;
             }
             else

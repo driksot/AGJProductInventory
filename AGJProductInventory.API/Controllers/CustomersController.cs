@@ -1,4 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
+using AGJProductInventory.Application.DTOs;
 using AGJProductInventory.Application.Features.Customer.Commands.CreateCustomerCommand;
 using AGJProductInventory.Application.Features.Customer.Commands.DeleteCustomerCommand;
 using AGJProductInventory.Application.Features.Customer.Commands.UpdateCustomerCommand;
@@ -24,7 +25,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET: api/<CustomersController>
         [HttpGet]
-        public async Task<ActionResult<List<CustomerListDTO>>> Get()
+        public async Task<ActionResult<List<CustomerDTO>>> Get()
         {
             var customers = await _mediator.Send(new GetCustomerListQuery());
             return Ok(customers);
@@ -32,7 +33,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET api/<CustomersController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerDetailDTO>> Get(int id)
+        public async Task<ActionResult<CustomerDTO>> Get(int id)
         {
             var customer = await _mediator.Send(new GetCustomerDetailQuery { Id = id });
             return Ok(customer);
@@ -40,7 +41,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<CustomersController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse<CreateCustomerDTO>>> Post([FromBody] CreateCustomerDTO customerDTO)
+        public async Task<ActionResult<BaseCommandResponse<CustomerDTO>>> Post([FromBody] CustomerDTO customerDTO)
         {
             var command = new CreateCustomerCommand { CustomerDTO = customerDTO };
             var response = await _mediator.Send(command);
@@ -49,7 +50,7 @@ namespace AGJProductInventory.API.Controllers
 
         // PUT api/<CustomersController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<BaseCommandResponse<UpdateCustomerDTO>>> Put(int id, [FromBody] UpdateCustomerDTO customerDTO)
+        public async Task<ActionResult<BaseCommandResponse<CustomerDTO>>> Put(int id, [FromBody] CustomerDTO customerDTO)
         {
             var command = new UpdateCustomerCommand { Id = id, CustomerDTO = customerDTO };
             var response = await _mediator.Send(command);

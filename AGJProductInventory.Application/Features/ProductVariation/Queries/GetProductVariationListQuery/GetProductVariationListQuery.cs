@@ -1,15 +1,16 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.ProductVariation.Queries.GetProductVariationListQuery
 {
-    public class GetProductVariationListQuery : IRequest<List<ProductVariationListDTO>>
+    public class GetProductVariationListQuery : IRequest<List<ProductVariationDTO>>
     {
         public int ProductId { get; set; }
     }
 
-    public class GetProductVariationListQueryHandler : IRequestHandler<GetProductVariationListQuery, List<ProductVariationListDTO>>
+    public class GetProductVariationListQueryHandler : IRequestHandler<GetProductVariationListQuery, List<ProductVariationDTO>>
     {
         private readonly IProductVariationRepository _productVariationRepository;
         private readonly IMapper _mapper;
@@ -20,10 +21,10 @@ namespace AGJProductInventory.Application.Features.ProductVariation.Queries.GetP
             _mapper = mapper;
         }
 
-        public async Task<List<ProductVariationListDTO>> Handle(GetProductVariationListQuery request, CancellationToken cancellationToken)
+        public async Task<List<ProductVariationDTO>> Handle(GetProductVariationListQuery request, CancellationToken cancellationToken)
         {
-            var productVariations = await _productVariationRepository.GetAllByProduct(request.ProductId);
-            return _mapper.Map<List<ProductVariationListDTO>>(productVariations);
+            var productVariations = await _productVariationRepository.GetAll(request.ProductId);
+            return _mapper.Map<List<ProductVariationDTO>>(productVariations);
         }
     }
 }

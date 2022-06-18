@@ -1,6 +1,6 @@
 ﻿@inject IProductVariationService _productVariationService
 
-<EditForm Model="_productVariation" OnInvalidSubmit="SaveAsync">
+<EditForm Model="@_productVariation" OnSubmit="SaveAsync">
     <MudDialog>
         <TitleContent>
             <MudText Typo="Typo.h6">
@@ -40,7 +40,7 @@
     private async Task SaveAsync()
     {
         _productVariation.ProductId = Id;
-        await _productVariationService.Add(_productVariation);
+        await _productVariationService.Create(_productVariation);
         MudDialog.Close();
     }
 }

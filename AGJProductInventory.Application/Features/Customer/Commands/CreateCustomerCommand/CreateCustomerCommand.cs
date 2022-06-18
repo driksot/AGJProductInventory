@@ -1,35 +1,33 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Customer.Commands.CreateCustomerCommand
 {
-    public class CreateCustomerCommand : IRequest<BaseCommandResponse<CreateCustomerDTO>>
+    public class CreateCustomerCommand : IRequest<BaseCommandResponse<CustomerDTO>>
     {
-        public CreateCustomerDTO CustomerDTO { get; set; }
+        public CustomerDTO CustomerDTO { get; set; }
     }
 
-    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, BaseCommandResponse<CreateCustomerDTO>>
+    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, BaseCommandResponse<CustomerDTO>>
     {
         private readonly ICustomerRepository _customerRepository;
-        private readonly ICustomerAddressRepository _customerAddressRepository;
         private readonly IMapper _mapper;
 
         public CreateCustomerCommandHandler(
             ICustomerRepository customerRepository,
-            ICustomerAddressRepository customerAddressRepository,
             IMapper mapper)
         {
             _customerRepository = customerRepository;
-            _customerAddressRepository = customerAddressRepository;
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<CreateCustomerDTO>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<CustomerDTO>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<CreateCustomerDTO>();
-            var validator = new CreateCustomerDTOValidator(_customerAddressRepository);
+            var response = new BaseCommandResponse<CustomerDTO>();
+            var validator = new CustomerDTOValidator();
             var validationResult = await validator.ValidateAsync(request.CustomerDTO);
 
             if (!validationResult.IsValid)
@@ -41,12 +39,10 @@ namespace AGJProductInventory.Application.Features.Customer.Commands.CreateCusto
                 response.Errors = validationResult.Errors.Select(q => q.ErrorMessage).ToList();
             }
 
-            var customer = _mapper.Map<Domain.Customer>(request.CustomerDTO);
-
-            customer = await _customerRepository.Add(customer);
+            var customer = await _customerRepository.Create(request.CustomerDTO);
 
             response.IsSuccess = true;
-            response.Data = _mapper.Map<CreateCustomerDTO>(customer);
+            response.Data = _mapper.Map<CustomerDTO>(customer);
             response.Time = DateTime.UtcNow;
             response.Message = "Customer created successfully.";
             response.Errors = null;

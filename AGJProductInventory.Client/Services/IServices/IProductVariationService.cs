@@ -2,8 +2,12 @@
 
 namespace AGJProductInventory.Client.Services.IServices
 {
-    public interface IProductVariationService : IGenericRepository<ProductVariationViewModel>
+    public interface IProductVariationService
     {
-        Task<List<ProductVariationViewModel>> GetAllByProduct(int productId);
+        Task<ProductVariationViewModel> Get(int id);
+        Task<IEnumerable<ProductVariationViewModel>> GetAll(int? id = null);
+        Task<ProductVariationViewModel> Create(ProductVariationViewModel productVariationViewModel);
+        Task<ProductVariationViewModel> Update(ProductVariationViewModel productVariationViewModel);
+        Task<int> Delete(int id);
     }
 }

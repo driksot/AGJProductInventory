@@ -1,10 +1,10 @@
 ﻿using AGJProductInventory.Application.Common;
+using AGJProductInventory.Application.DTOs;
 using AGJProductInventory.Application.Features.Product.Commands.CreateProductCommand;
 using AGJProductInventory.Application.Features.Product.Commands.DeleteProductCommand;
 using AGJProductInventory.Application.Features.Product.Commands.UpdateProductCommand;
 using AGJProductInventory.Application.Features.Product.Queries.GetProductDetailQuery;
 using AGJProductInventory.Application.Features.Product.Queries.GetProductListQuery;
-using AGJProductInventory.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +25,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET: api/<ProductsController>
         [HttpGet]
-        public async Task<ActionResult<List<ProductListDTO>>> Get()
+        public async Task<ActionResult<List<ProductDTO>>> Get()
         {
             var products = await _mediator.Send(new GetProductListQuery());
             return Ok(products);
@@ -33,7 +33,7 @@ namespace AGJProductInventory.API.Controllers
 
         // GET api/<ProductsController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDetailDTO>> Get(int id)
+        public async Task<ActionResult<ProductDTO>> Get(int id)
         {
             var product = await _mediator.Send(new GetProductDetailQuery { Id = id });
             return Ok(product);
@@ -41,7 +41,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<ProductsController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse<Product>>> Post([FromBody] CreateProductDTO productDTO)
+        public async Task<ActionResult<BaseCommandResponse<ProductDTO>>> Post([FromBody] ProductDTO productDTO)
         {
             var command = new CreateProductCommand { ProductDTO = productDTO };
             var response = await _mediator.Send(command);
@@ -50,7 +50,7 @@ namespace AGJProductInventory.API.Controllers
 
         // PUT api/<ProductsController>/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<BaseCommandResponse<UpdateProductDTO>>> Put(int id, [FromBody] UpdateProductDTO productDTO)
+        public async Task<ActionResult<BaseCommandResponse<ProductDTO>>> Put(int id, [FromBody] ProductDTO productDTO)
         {
             var command = new UpdateProductCommand { Id = id, ProductDTO = productDTO };
             var response = await _mediator.Send(command);

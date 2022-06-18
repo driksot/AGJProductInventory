@@ -1,17 +1,18 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Product.Commands.UpdateProductCommand
 {
-    public class UpdateProductCommand : IRequest<BaseCommandResponse<UpdateProductDTO>>
+    public class UpdateProductCommand : IRequest<BaseCommandResponse<ProductDTO>>
     {
         public int Id { get; set; }
-        public UpdateProductDTO ProductDTO { get; set; }
+        public ProductDTO ProductDTO { get; set; }
     }
 
-    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, BaseCommandResponse<UpdateProductDTO>>
+    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, BaseCommandResponse<ProductDTO>>
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
@@ -27,10 +28,10 @@ namespace AGJProductInventory.Application.Features.Product.Commands.UpdateProduc
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<UpdateProductDTO>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<ProductDTO>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<UpdateProductDTO>();
-            var validator = new UpdateProductDTOValidator(_categoryRepository);
+            var response = new BaseCommandResponse<ProductDTO>();
+            var validator = new ProductDTOValidator(_categoryRepository);
             var validationResult = await validator.ValidateAsync(request.ProductDTO);
 
             if (!validationResult.IsValid)
@@ -52,7 +53,7 @@ namespace AGJProductInventory.Application.Features.Product.Commands.UpdateProduc
                 }
 
                 response.IsSuccess = true;
-                response.Data = _mapper.Map<UpdateProductDTO>(product);
+                response.Data = _mapper.Map<ProductDTO>(product);
                 response.Time = DateTime.UtcNow;
                 response.Message = "Category creation successful.";
                 response.Errors = null;

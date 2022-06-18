@@ -33,7 +33,7 @@ else
           OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
           RowEditCommit="ItemHasBeenCommitted">
         <ToolBarContent>
-            <MudButton @onclick="OpenDialog" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">New Size</MudButton>
+            <MudButton @onclick="@(() => OpenDialog(_product.Id))" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">New Size</MudButton>
             <MudSpacer />
             <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
@@ -81,10 +81,15 @@ else
             _isLoading = true;
             StateHasChanged();
             _product = await _productService.Get(Id);
-            _productVariations = await _productVariationService.GetAllByProduct(Id);
-            _isLoading = false;
-            StateHasChanged();
+            await LoadVaration();
         }
+    }
+
+    private async Task LoadVaration()
+    {
+        _productVariations = await _productVariationService.GetAll(Id);
+        _isLoading = false;
+        StateHasChanged();
     }
 
     private void ClearEventLog()
@@ -133,10 +138,17 @@ else
         return false;
     }
 
-    private void OpenDialog()
+    private async Task OpenDialog(int id)
     {
+        var parameters = new DialogParameters();
+        parameters.Add("Id", id);
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
 
-        DialogService.Show<AddProductVariationModal>("Add", options);
+        var dialog = DialogService.Show<AddProductVariationModal>("Add", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Cancelled)
+        {
+            await LoadVaration();
+        }
     }
 }

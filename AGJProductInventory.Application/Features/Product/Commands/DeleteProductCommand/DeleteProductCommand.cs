@@ -1,6 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
-using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Product.Commands.DeleteProductCommand
@@ -13,12 +12,10 @@ namespace AGJProductInventory.Application.Features.Product.Commands.DeleteProduc
     public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, BaseCommandResponse<int>>
     {
         private readonly IProductRepository _productRepository;
-        private readonly IMapper _mapper;
 
-        public DeleteProductCommandHandler(IProductRepository productRepository, IMapper mapper)
+        public DeleteProductCommandHandler(IProductRepository productRepository)
         {
             _productRepository = productRepository;
-            _mapper = mapper;
         }
 
         public async Task<BaseCommandResponse<int>> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -36,7 +33,7 @@ namespace AGJProductInventory.Application.Features.Product.Commands.DeleteProduc
             }
             else
             {
-                await _productRepository.Delete(product);
+                await _productRepository.Archive(product.Id);
 
                 response.IsSuccess = true;
                 response.Data = request.Id;

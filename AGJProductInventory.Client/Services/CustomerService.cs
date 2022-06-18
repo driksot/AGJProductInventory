@@ -1,7 +1,6 @@
 ﻿using AGJProductInventory.Client.Services.IServices;
 using AGJProductInventory.Client.Static;
 using AGJProductInventory.Client.ViewModels;
-using Newtonsoft.Json;
 using System.Net.Http.Json;
 
 namespace AGJProductInventory.Client.Services
@@ -17,12 +16,12 @@ namespace AGJProductInventory.Client.Services
             _customerApiUrl = APIEndpoints.s_customers;
         }
 
-        public Task<CustomerViewModel> Add(CustomerViewModel entity)
+        public Task<CustomerViewModel> Create(CustomerViewModel customerDTO)
         {
             throw new NotImplementedException();
         }
 
-        public Task<CustomerViewModel> Delete(CustomerViewModel entity)
+        public Task<int> Delete(int id)
         {
             throw new NotImplementedException();
         }
@@ -37,9 +36,9 @@ namespace AGJProductInventory.Client.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IReadOnlyList<CustomerViewModel>> GetAll()
+        public async Task<IEnumerable<CustomerViewModel>> GetAll()
         {
-            return await _http.GetFromJsonAsync<IReadOnlyList<CustomerViewModel>>(_customerApiUrl);
+            return await _http.GetFromJsonAsync<IEnumerable<CustomerViewModel>>(_customerApiUrl);
 
             //var response = await _http.GetAsync(_customerApiUrl);
             //var content = await response.Content.ReadAsStringAsync();

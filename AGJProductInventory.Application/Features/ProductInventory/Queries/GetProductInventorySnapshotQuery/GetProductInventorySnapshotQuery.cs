@@ -1,14 +1,15 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventorySnapshotQuery
 {
-    public class GetProductInventorySnapshotQuery : IRequest<List<ProductInventorySnapshotListDTO>>
+    public class GetProductInventorySnapshotQuery : IRequest<List<ProductInventorySnapshotDTO>>
     {
     }
 
-    public class GetProductInventorySnapshotQueryHandler : IRequestHandler<GetProductInventorySnapshotQuery, List<ProductInventorySnapshotListDTO>>
+    public class GetProductInventorySnapshotQueryHandler : IRequestHandler<GetProductInventorySnapshotQuery, List<ProductInventorySnapshotDTO>>
     {
         private readonly IProductInventoryRepository _productInventoryRepository;
         private readonly IMapper _mapper;
@@ -19,10 +20,10 @@ namespace AGJProductInventory.Application.Features.ProductInventory.Queries.GetP
             _mapper = mapper;
         }
 
-        public async Task<List<ProductInventorySnapshotListDTO>> Handle(GetProductInventorySnapshotQuery request, CancellationToken cancellationToken)
+        public async Task<List<ProductInventorySnapshotDTO>> Handle(GetProductInventorySnapshotQuery request, CancellationToken cancellationToken)
         {
-            var snapshotList = await _productInventoryRepository.GetProductInventorySnapshots();
-            return _mapper.Map<List<ProductInventorySnapshotListDTO>>(snapshotList);
+            var snapshotList = await _productInventoryRepository.GetSnapshotHistory();
+            return _mapper.Map<List<ProductInventorySnapshotDTO>>(snapshotList);
         }
     }
 }

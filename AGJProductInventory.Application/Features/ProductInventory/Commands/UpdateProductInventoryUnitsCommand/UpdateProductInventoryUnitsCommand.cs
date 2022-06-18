@@ -1,22 +1,18 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AGJProductInventory.Application.Features.ProductInventory.Commands.UpdateProductInventoryUnitsCommand
 {
-    public class UpdateProductInventoryUnitsCommand : IRequest<BaseCommandResponse<UpdateProductInventoryUnitsDTO>>
+    public class UpdateProductInventoryUnitsCommand : IRequest<BaseCommandResponse<ProductInventoryUpdateDTO>>
     {
         public int Id { get; set; }
-        public UpdateProductInventoryUnitsDTO ProductInventoryDTO { get; set; }
+        public ProductInventoryUpdateDTO ProductInventoryDTO { get; set; }
     }
 
-    public class UpdateProductInventoryUnitsCommandHandler : IRequestHandler<UpdateProductInventoryUnitsCommand, BaseCommandResponse<UpdateProductInventoryUnitsDTO>>
+    public class UpdateProductInventoryUnitsCommandHandler : IRequestHandler<UpdateProductInventoryUnitsCommand, BaseCommandResponse<ProductInventoryUpdateDTO>>
     {
         private readonly IProductInventoryRepository _productInventoryRepository;
         private readonly IMapper _mapper;
@@ -27,10 +23,10 @@ namespace AGJProductInventory.Application.Features.ProductInventory.Commands.Upd
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<UpdateProductInventoryUnitsDTO>> Handle(UpdateProductInventoryUnitsCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<ProductInventoryUpdateDTO>> Handle(UpdateProductInventoryUnitsCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<UpdateProductInventoryUnitsDTO>();
-            var validator = new UpdateProductInventoryUnitsDTOValidator();
+            var response = new BaseCommandResponse<ProductInventoryUpdateDTO>();
+            var validator = new ProductInventoryUpdateDTOValidator();
             var validationResult = await validator.ValidateAsync(request.ProductInventoryDTO);
 
             if (!validationResult.IsValid)
@@ -43,10 +39,10 @@ namespace AGJProductInventory.Application.Features.ProductInventory.Commands.Upd
             }
             else
             {
-                var inventory = await _productInventoryRepository.UpdateProductInventoryUnitsAvailable(request.Id, request.ProductInventoryDTO.Adjustment);
+                var inventory = await _productInventoryRepository.UpdateUnitsAvailable(request.Id, request.ProductInventoryDTO.Adjustment);
 
                 response.IsSuccess = true;
-                response.Data = _mapper.Map<UpdateProductInventoryUnitsDTO>(inventory);
+                response.Data = _mapper.Map<ProductInventoryUpdateDTO>(inventory);
                 response.Time = DateTime.UtcNow;
                 response.Message = "Product inventory count update successful.";
                 response.Errors = null;

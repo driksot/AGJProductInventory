@@ -10,6 +10,7 @@
 
         internal readonly static string s_products = $"{ServerBaseUrl}/api/products";
         internal readonly static string s_productVariations = $"{ServerBaseUrl}/api/productvariations";
+        internal readonly static string s_productInventories = $"{ServerBaseUrl}/api/productinventories";
         internal readonly static string s_categories = $"{ServerBaseUrl}/api/categories";
         internal readonly static string s_categoriesWithProducts = $"{ServerBaseUrl}/api/categories/withproducts";
         internal readonly static string s_customers = $"{ServerBaseUrl}/api/customers";

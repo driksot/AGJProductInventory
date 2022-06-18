@@ -1,15 +1,16 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Product.Queries.GetProductDetailQuery
 {
-    public class GetProductDetailQuery : IRequest<ProductDetailDTO>
+    public class GetProductDetailQuery : IRequest<ProductDTO>
     {
         public int Id { get; set; }
     }
 
-    public class GetProductDetailQueryHandler : IRequestHandler<GetProductDetailQuery, ProductDetailDTO>
+    public class GetProductDetailQueryHandler : IRequestHandler<GetProductDetailQuery, ProductDTO>
     {
         private readonly IProductRepository _productRepository;
         private readonly IMapper _mapper;
@@ -20,10 +21,10 @@ namespace AGJProductInventory.Application.Features.Product.Queries.GetProductDet
             _mapper = mapper;
         }
 
-        public async Task<ProductDetailDTO> Handle(GetProductDetailQuery request, CancellationToken cancellationToken)
+        public async Task<ProductDTO> Handle(GetProductDetailQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetProductWithDetails(request.Id);
-            return _mapper.Map<ProductDetailDTO>(product);
+            var product = await _productRepository.Get(request.Id);
+            return _mapper.Map<ProductDTO>(product);
         }
     }
 }

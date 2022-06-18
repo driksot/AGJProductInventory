@@ -1,17 +1,18 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
+using AGJProductInventory.Application.DTOs;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Category.Commands.UpdateCategoryCommand
 {
-    public class UpdateCategoryCommand : IRequest<BaseCommandResponse<UpdateCategoryDTO>>
+    public class UpdateCategoryCommand : IRequest<BaseCommandResponse<CategoryDTO>>
     {
         public int Id { get; set; }
-        public UpdateCategoryDTO CategoryDTO { get; set; }
+        public CategoryDTO CategoryDTO { get; set; }
     }
 
-    public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, BaseCommandResponse<UpdateCategoryDTO>>
+    public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, BaseCommandResponse<CategoryDTO>>
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
@@ -22,10 +23,10 @@ namespace AGJProductInventory.Application.Features.Category.Commands.UpdateCateg
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<UpdateCategoryDTO>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<CategoryDTO>> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<UpdateCategoryDTO>();
-            var validator = new UpdateCategoryDTOValidator();
+            var response = new BaseCommandResponse<CategoryDTO>();
+            var validator = new CategoryDTOValidator();
             var validationResult = await validator.ValidateAsync(request.CategoryDTO);
 
             if (!validationResult.IsValid)
@@ -45,7 +46,7 @@ namespace AGJProductInventory.Application.Features.Category.Commands.UpdateCateg
                 await _categoryRepository.Update(category);
 
                 response.IsSuccess = true;
-                response.Data = _mapper.Map<UpdateCategoryDTO>(category);
+                response.Data = _mapper.Map<CategoryDTO>(category);
                 response.Time = DateTime.UtcNow;
                 response.Message = "Category creation successful.";
                 response.Errors = null;

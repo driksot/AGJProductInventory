@@ -71,7 +71,7 @@ else
 
     private async Task<TableData<ProductViewModel>> ServerReload(TableState state)
     {
-        IEnumerable<ProductViewModel> data = await _productService.GetProductListWithDetails();
+        IEnumerable<ProductViewModel> data = await _productService.GetAll();
         await Task.Delay(300);
         data = data.Where(element =>
         {

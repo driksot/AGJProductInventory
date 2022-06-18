@@ -123,7 +123,7 @@ else
         if (_product.Id == 0)
         {
             // Create Product
-            HttpResponseMessage response = await _productService.AddProduct(_product);
+            await _productService.Create(_product);
         }
         else
         {

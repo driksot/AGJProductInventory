@@ -17,14 +17,15 @@ namespace AGJProductInventory.Client.Services
             _productUrl = APIEndpoints.s_products;
         }
 
-        public Task<ProductViewModel> Add(ProductViewModel entity)
+        public Task<int> Archive(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<HttpResponseMessage> AddProduct(ProductViewModel entity)
+        public async Task<ProductViewModel> Create(ProductViewModel productViewModel)
         {
-            return await _http.PostAsJsonAsync<ProductViewModel>(_productUrl, entity);
+            var response = await _http.PostAsJsonAsync<ProductViewModel>(_productUrl, productViewModel);
+            return JsonConvert.DeserializeObject<ProductViewModel>(await response.Content.ReadAsStringAsync());
         }
 
         public Task<ProductViewModel> Delete(ProductViewModel entity)
@@ -57,19 +58,14 @@ namespace AGJProductInventory.Client.Services
             //}
         }
 
-        public Task<IReadOnlyList<ProductViewModel>> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<ProductViewModel>> GetProductListWithDetails()
+        public async Task<IEnumerable<ProductViewModel>> GetAll()
         {
             var response = await _http.GetAsync(_productUrl);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                var products = JsonConvert.DeserializeObject<List<ProductViewModel>>(content);
+                var products = JsonConvert.DeserializeObject<IEnumerable<ProductViewModel>>(content);
                 //foreach (var product in products)
                 //{
                 //    product.ImageUrl = APIEndpoints.ServerBaseUrl + "/wwwroot/" + product.ImageUrl;
@@ -83,14 +79,9 @@ namespace AGJProductInventory.Client.Services
             }
         }
 
-        public Task<ProductViewModel> GetProductWithDetails(int id)
+        public async Task<ProductViewModel> Update(ProductViewModel productViewModel)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<ProductViewModel> Update(ProductViewModel entity)
-        {
-            var result = await _http.PutAsJsonAsync($"{_productUrl}/{entity.Id}", entity);
+            var result = await _http.PutAsJsonAsync($"{_productUrl}/{productViewModel.Id}", productViewModel);
             var response = await result.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<ProductViewModel>(response);
