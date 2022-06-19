@@ -1,13 +1,13 @@
-﻿using AGJProductInventory.Client.ViewModels;
+﻿using AGJProductInventory.Application.DTOs.Category;
 
 namespace AGJProductInventory.Client.Services.IServices
 {
     public interface ICategoryService
     {
-        public Task<CategoryViewModel> Get(int id);
-        public Task<IEnumerable<CategoryViewModel>> GetAll();
-        public Task<CategoryViewModel> Create(CategoryViewModel categoryViewModel);
-        public Task<CategoryViewModel> Update(CategoryViewModel categoryViewModel);
+        public Task<CategoryDTO> Get(int id);
+        public Task<IEnumerable<CategoryDTO>> GetAll();
+        public Task<CategoryDTO> Create(CategoryDTO categoryViewModel);
+        public Task<CategoryDTO> Update(CategoryDTO categoryViewModel);
         public Task<int> Delete(int id);
         Task<bool> Exists(int id);
     }

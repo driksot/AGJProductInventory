@@ -1,5 +1,5 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.Product;
 using AGJProductInventory.Domain;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -34,14 +34,14 @@ namespace AGJProductInventory.Persistence.Repositories
             return new ProductDTO();
         }
 
-        public async Task<ProductDTO> Create(ProductDTO productDTO)
+        public async Task<CreateProductDTO> Create(CreateProductDTO productDTO)
         {
-            var product = _mapper.Map<ProductDTO, Product>(productDTO);
+            var product = _mapper.Map<CreateProductDTO, Product>(productDTO);
 
             var addedProduct = _dbContext.Products.Add(product);
             await _dbContext.SaveChangesAsync();
 
-            return _mapper.Map<Product, ProductDTO>(addedProduct.Entity);
+            return _mapper.Map<Product, CreateProductDTO>(addedProduct.Entity);
         }
 
         public async Task<ProductDTO> Update(ProductDTO productDTO)

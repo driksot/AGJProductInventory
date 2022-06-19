@@ -1,5 +1,5 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.Product;
 using AutoMapper;
 using MediatR;
 

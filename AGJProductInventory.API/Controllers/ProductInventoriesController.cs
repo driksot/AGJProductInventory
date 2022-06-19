@@ -1,5 +1,6 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.ProductInventory;
 using AGJProductInventory.Application.Features.ProductInventory.Commands.UpdateProductInventoryUnitsCommand;
 using AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventoryDetailQuery;
 using AGJProductInventory.Application.Features.ProductInventory.Queries.GetProductInventoryListQuery;
@@ -48,7 +49,7 @@ namespace AGJProductInventory.API.Controllers
 
         // PUT api/<ProductInventoriesController>/inventory/5
         [HttpPut("inventory/{id}")]
-        public async Task<ActionResult<BaseCommandResponse<ProductInventoryUpdateDTO>>> PutInventory(int id, [FromBody] ProductInventoryUpdateDTO productInventoryDTO)
+        public async Task<ActionResult<BaseCommandResponse<UpdateProductInventoryDTO>>> PutInventory(int id, [FromBody] UpdateProductInventoryDTO productInventoryDTO)
         {
             var command = new UpdateProductInventoryUnitsCommand { Id = id, ProductInventoryDTO = productInventoryDTO };
             var response = await _mediator.Send(command);

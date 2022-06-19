@@ -2,6 +2,7 @@
 using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
 using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.Customer;
 using AutoMapper;
 using MediatR;
 

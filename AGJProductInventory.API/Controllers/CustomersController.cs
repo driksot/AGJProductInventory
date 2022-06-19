@@ -1,5 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.Customer;
 using AGJProductInventory.Application.Features.Customer.Commands.CreateCustomerCommand;
 using AGJProductInventory.Application.Features.Customer.Commands.DeleteCustomerCommand;
 using AGJProductInventory.Application.Features.Customer.Commands.UpdateCustomerCommand;
@@ -41,7 +41,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<CustomersController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse<CustomerDTO>>> Post([FromBody] CustomerDTO customerDTO)
+        public async Task<ActionResult<BaseCommandResponse<CreateCustomerDTO>>> Post([FromBody] CreateCustomerDTO customerDTO)
         {
             var command = new CreateCustomerCommand { CustomerDTO = customerDTO };
             var response = await _mediator.Send(command);

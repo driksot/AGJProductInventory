@@ -1,5 +1,5 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.ProductVariation;
 using AGJProductInventory.Domain;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -41,14 +41,14 @@ namespace AGJProductInventory.Persistence.Repositories
             }
         }
 
-        public async Task<ProductVariationDTO> Create(ProductVariationDTO objDTO)
+        public async Task<CreateProductVariationDTO> Create(CreateProductVariationDTO objDTO)
         {
-            var variation = _mapper.Map<ProductVariationDTO, ProductVariation>(objDTO);
+            var variation = _mapper.Map<CreateProductVariationDTO, ProductVariation>(objDTO);
 
             var addedVariation = _dbContext.ProductVariations.Add(variation);
             await _dbContext.SaveChangesAsync();
 
-            return _mapper.Map<ProductVariation, ProductVariationDTO>(addedVariation.Entity);
+            return _mapper.Map<ProductVariation, CreateProductVariationDTO>(addedVariation.Entity);
         }
 
         public async Task<int> Delete(int id)

@@ -1,4 +1,5 @@
-﻿using AGJProductInventory.Client.Services.IServices;
+﻿using AGJProductInventory.Application.DTOs.Category;
+using AGJProductInventory.Client.Services.IServices;
 using AGJProductInventory.Client.Static;
 using AGJProductInventory.Client.ViewModels;
 using Newtonsoft.Json;
@@ -17,12 +18,12 @@ namespace AGJProductInventory.Client.Services
             _categoryUrl = APIEndpoints.s_categories;
         }
 
-        public async Task<CategoryViewModel> Create(CategoryViewModel categoryViewModel)
+        public async Task<CategoryDTO> Create(CategoryDTO categoryDTO)
         {
             try
             {
                 using var request = new HttpRequestMessage();
-                var content = new StringContent(JsonConvert.SerializeObject(categoryViewModel));
+                var content = new StringContent(JsonConvert.SerializeObject(categoryDTO));
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
                 request.Content = content;
                 request.Method = HttpMethod.Post;
@@ -31,7 +32,7 @@ namespace AGJProductInventory.Client.Services
                 var result = await _http.PostAsync(_categoryUrl, request.Content);
                 var response = await result.Content.ReadAsStringAsync();
 
-                var category = JsonConvert.DeserializeObject<CategoryViewModel>(response);
+                var category = JsonConvert.DeserializeObject<CategoryDTO>(response);
 
                 if (category == null) throw new Exception(); // TODO: create null exception
 
@@ -39,7 +40,7 @@ namespace AGJProductInventory.Client.Services
             }
             catch (Exception ex)
             {
-                return categoryViewModel;
+                return categoryDTO;
             }
         }
 
@@ -54,14 +55,14 @@ namespace AGJProductInventory.Client.Services
             throw new NotImplementedException();
         }
 
-        public async Task<CategoryViewModel> Get(int id)
+        public async Task<CategoryDTO> Get(int id)
         {
             var response = await _http.GetAsync(_categoryUrl + id);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                var category = JsonConvert.DeserializeObject<CategoryViewModel>(content);
+                var category = JsonConvert.DeserializeObject<CategoryDTO>(content);
                 return category;
             }
             else
@@ -71,14 +72,14 @@ namespace AGJProductInventory.Client.Services
             }
         }
 
-        public async Task<IEnumerable<CategoryViewModel>> GetAll()
+        public async Task<IEnumerable<CategoryDTO>> GetAll()
         {
             var response = await _http.GetAsync(_categoryUrl);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                var categories = JsonConvert.DeserializeObject<List<CategoryViewModel>>(content);
+                var categories = JsonConvert.DeserializeObject<List<CategoryDTO>>(content);
                 return categories;
             }
             else
@@ -88,14 +89,14 @@ namespace AGJProductInventory.Client.Services
             }
         }
 
-        public async Task<CategoryViewModel> Update(CategoryViewModel entity)
+        public async Task<CategoryDTO> Update(CategoryDTO categoryDTO)
         {
-            var categoryId = entity.Id;
+            var categoryId = categoryDTO.Id;
 
             try
             {
                 using var request = new HttpRequestMessage();
-                var content = new StringContent(JsonConvert.SerializeObject(entity));
+                var content = new StringContent(JsonConvert.SerializeObject(categoryDTO));
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
                 request.Content = content;
                 request.Method = HttpMethod.Post;
@@ -104,7 +105,7 @@ namespace AGJProductInventory.Client.Services
                 var result = await _http.PutAsync(_categoryUrl + categoryId, request.Content);
                 var response = await result.Content.ReadAsStringAsync();
 
-                var category = JsonConvert.DeserializeObject<CategoryViewModel>(response);
+                var category = JsonConvert.DeserializeObject<CategoryDTO>(response);
 
                 if (category == null) throw new Exception(); // TODO: create null exception
 
@@ -112,7 +113,7 @@ namespace AGJProductInventory.Client.Services
             }
             catch (Exception ex)
             {
-                return entity;
+                return categoryDTO;
             }
         }
     }

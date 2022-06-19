@@ -84,8 +84,8 @@ else
     [Parameter]
     public int Id { get; set; }
 
-    private ProductViewModel _product { get; set; } = new ProductViewModel();
-    private IEnumerable<CategoryViewModel> _categories { get; set; } = new List<CategoryViewModel>();
+    private ProductDTO _product { get; set; } = new ProductDTO();
+    private IEnumerable<CategoryDTO> _categories { get; set; } = new List<CategoryDTO>();
     private string _title { get; set; } = "Add";
     private bool _isLoading { get; set; } = true;
     private string _oldImageUrl { get; set; }

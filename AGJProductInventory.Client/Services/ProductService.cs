@@ -1,4 +1,5 @@
-﻿using AGJProductInventory.Client.Services.IServices;
+﻿using AGJProductInventory.Application.DTOs.Product;
+using AGJProductInventory.Client.Services.IServices;
 using AGJProductInventory.Client.Static;
 using AGJProductInventory.Client.ViewModels;
 using Newtonsoft.Json;
@@ -22,13 +23,13 @@ namespace AGJProductInventory.Client.Services
             throw new NotImplementedException();
         }
 
-        public async Task<ProductViewModel> Create(ProductViewModel productViewModel)
+        public async Task<ProductDTO> Create(ProductDTO productViewModel)
         {
-            var response = await _http.PostAsJsonAsync<ProductViewModel>(_productUrl, productViewModel);
-            return JsonConvert.DeserializeObject<ProductViewModel>(await response.Content.ReadAsStringAsync());
+            var response = await _http.PostAsJsonAsync<ProductDTO>(_productUrl, productViewModel);
+            return JsonConvert.DeserializeObject<ProductDTO>(await response.Content.ReadAsStringAsync());
         }
 
-        public Task<ProductViewModel> Delete(ProductViewModel entity)
+        public Task<ProductDTO> Delete(ProductDTO entity)
         {
             throw new NotImplementedException();
         }
@@ -38,16 +39,16 @@ namespace AGJProductInventory.Client.Services
             throw new NotImplementedException();
         }
 
-        public async Task<ProductViewModel> Get(int id)
+        public async Task<ProductDTO> Get(int id)
         {
-            return await _http.GetFromJsonAsync<ProductViewModel>(_productUrl + "/" + id);
+            return await _http.GetFromJsonAsync<ProductDTO>(_productUrl + "/" + id);
 
             //var response = await _http.GetAsync(_productUrl + "/" + id);
             //var content = await response.Content.ReadAsStringAsync();
 
             //if (response.IsSuccessStatusCode)
             //{
-            //    var product = JsonConvert.DeserializeObject<ProductViewModel>(content);
+            //    var product = JsonConvert.DeserializeObject<ProductDTO>(content);
             //    //product.ImageUrl = APIEndpoints.ServerBaseUrl + "/wwwroot/" + product.ImageUrl;
             //    return product;
             //}
@@ -58,14 +59,14 @@ namespace AGJProductInventory.Client.Services
             //}
         }
 
-        public async Task<IEnumerable<ProductViewModel>> GetAll()
+        public async Task<IEnumerable<ProductDTO>> GetAll()
         {
             var response = await _http.GetAsync(_productUrl);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                var products = JsonConvert.DeserializeObject<IEnumerable<ProductViewModel>>(content);
+                var products = JsonConvert.DeserializeObject<IEnumerable<ProductDTO>>(content);
                 //foreach (var product in products)
                 //{
                 //    product.ImageUrl = APIEndpoints.ServerBaseUrl + "/wwwroot/" + product.ImageUrl;
@@ -79,12 +80,12 @@ namespace AGJProductInventory.Client.Services
             }
         }
 
-        public async Task<ProductViewModel> Update(ProductViewModel productViewModel)
+        public async Task<ProductDTO> Update(ProductDTO productViewModel)
         {
             var result = await _http.PutAsJsonAsync($"{_productUrl}/{productViewModel.Id}", productViewModel);
             var response = await result.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<ProductViewModel>(response);
+            return JsonConvert.DeserializeObject<ProductDTO>(response);
         }
     }
 }

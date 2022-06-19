@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AGJProductInventory.Application.DTOs
+namespace AGJProductInventory.Application.DTOs.ProductVariation
 {
     public class ProductVariationDTO
     {

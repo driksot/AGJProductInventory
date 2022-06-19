@@ -3,7 +3,7 @@
 
 <MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"Customer Management".ToUpper())</MudText>
 
-<MudTable ServerData="@(new Func<TableState, Task<TableData<CustomerViewModel>>>(ServerReload))"
+<MudTable ServerData="@(new Func<TableState, Task<TableData<CustomerDTO>>>(ServerReload))"
           Dense="true" Hover="true" Striped="true" Bordered="true" @ref="table">
     <ToolBarContent>
         <MudButton Href="customer/new" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Class="ms-2">New Customer</MudButton>
@@ -15,10 +15,10 @@
 
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="name_field" T="CustomerViewModel">Customer</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="address_field" T="CustomerViewModel">Address</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="state_field" T="CustomerViewModel">State</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="since_field" T="CustomerViewModel">Since</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="name_field" T="CustomerDTO">Customer</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="address_field" T="CustomerDTO">Address</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="state_field" T="CustomerDTO">State</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="since_field" T="CustomerDTO">Since</MudTableSortLabel></MudTh>
         <MudTh>Actions</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -43,16 +43,16 @@
 </MudTable>
 
 @code {
-    private IEnumerable<CustomerViewModel> _customers { get; set; } = new List<CustomerViewModel>();
-    private MudTable<CustomerViewModel> table;
+    private IEnumerable<CustomerDTO> _customers { get; set; } = new List<CustomerDTO>();
+    private MudTable<CustomerDTO> table;
     private int totalItems;
     private string searchString = null;
 
     public bool IsLoading { get; set; }
 
-    private async Task<TableData<CustomerViewModel>> ServerReload(TableState state)
+    private async Task<TableData<CustomerDTO>> ServerReload(TableState state)
     {
-        IEnumerable<CustomerViewModel> data = await _customerService.GetAll();
+        IEnumerable<CustomerDTO> data = await _customerService.GetAll();
         await Task.Delay(300);
         data = data.Where(element =>
         {
@@ -91,7 +91,7 @@
         }
 
         _customers = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
-        return new TableData<CustomerViewModel>() { TotalItems = totalItems, Items = _customers };
+        return new TableData<CustomerDTO>() { TotalItems = totalItems, Items = _customers };
     }
 
     private void OnSearch(string text)

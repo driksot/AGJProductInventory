@@ -1,17 +1,17 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.Customer;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Customer.Commands.CreateCustomerCommand
 {
-    public class CreateCustomerCommand : IRequest<BaseCommandResponse<CustomerDTO>>
+    public class CreateCustomerCommand : IRequest<BaseCommandResponse<CreateCustomerDTO>>
     {
-        public CustomerDTO CustomerDTO { get; set; }
+        public CreateCustomerDTO CustomerDTO { get; set; }
     }
 
-    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, BaseCommandResponse<CustomerDTO>>
+    public class CreateCustomerCommandHandler : IRequestHandler<CreateCustomerCommand, BaseCommandResponse<CreateCustomerDTO>>
     {
         private readonly ICustomerRepository _customerRepository;
         private readonly IMapper _mapper;
@@ -24,10 +24,10 @@ namespace AGJProductInventory.Application.Features.Customer.Commands.CreateCusto
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<CustomerDTO>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<CreateCustomerDTO>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<CustomerDTO>();
-            var validator = new CustomerDTOValidator();
+            var response = new BaseCommandResponse<CreateCustomerDTO>();
+            var validator = new CreateCustomerDTOValidator();
             var validationResult = await validator.ValidateAsync(request.CustomerDTO);
 
             if (!validationResult.IsValid)
@@ -42,7 +42,7 @@ namespace AGJProductInventory.Application.Features.Customer.Commands.CreateCusto
             var customer = await _customerRepository.Create(request.CustomerDTO);
 
             response.IsSuccess = true;
-            response.Data = _mapper.Map<CustomerDTO>(customer);
+            response.Data = _mapper.Map<CreateCustomerDTO>(customer);
             response.Time = DateTime.UtcNow;
             response.Message = "Customer created successfully.";
             response.Errors = null;

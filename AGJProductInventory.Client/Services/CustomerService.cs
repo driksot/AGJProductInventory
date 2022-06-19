@@ -1,6 +1,7 @@
-﻿using AGJProductInventory.Client.Services.IServices;
+﻿using AGJProductInventory.Application.DTOs.Customer;
+using AGJProductInventory.Client.Services.IServices;
 using AGJProductInventory.Client.Static;
-using AGJProductInventory.Client.ViewModels;
+using Newtonsoft.Json;
 using System.Net.Http.Json;
 
 namespace AGJProductInventory.Client.Services
@@ -16,9 +17,10 @@ namespace AGJProductInventory.Client.Services
             _customerApiUrl = APIEndpoints.s_customers;
         }
 
-        public Task<CustomerViewModel> Create(CustomerViewModel customerDTO)
+        public async Task<CustomerDTO> Create(CustomerDTO customerViewModel)
         {
-            throw new NotImplementedException();
+            var response = await _http.PostAsJsonAsync<CustomerDTO>(_customerApiUrl, customerViewModel);
+            return JsonConvert.DeserializeObject<CustomerDTO>(await response.Content.ReadAsStringAsync());
         }
 
         public Task<int> Delete(int id)
@@ -31,21 +33,21 @@ namespace AGJProductInventory.Client.Services
             throw new NotImplementedException();
         }
 
-        public Task<CustomerViewModel> Get(int id)
+        public Task<CustomerDTO> Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<CustomerViewModel>> GetAll()
+        public async Task<IEnumerable<CustomerDTO>> GetAll()
         {
-            return await _http.GetFromJsonAsync<IEnumerable<CustomerViewModel>>(_customerApiUrl);
+            return await _http.GetFromJsonAsync<IEnumerable<CustomerDTO>>(_customerApiUrl);
 
             //var response = await _http.GetAsync(_customerApiUrl);
             //var content = await response.Content.ReadAsStringAsync();
 
             //if (response.IsSuccessStatusCode)
             //{
-            //    var categories = JsonConvert.DeserializeObject<List<CustomerViewModel>>(content);
+            //    var categories = JsonConvert.DeserializeObject<List<CustomerDTO>>(content);
             //    return categories;
             //}
             //else
@@ -55,7 +57,7 @@ namespace AGJProductInventory.Client.Services
             //}
         }
 
-        public Task<CustomerViewModel> Update(CustomerViewModel entity)
+        public Task<CustomerDTO> Update(CustomerDTO entity)
         {
             throw new NotImplementedException();
         }

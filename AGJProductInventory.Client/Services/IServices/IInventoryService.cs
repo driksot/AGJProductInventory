@@ -1,12 +1,12 @@
-﻿using AGJProductInventory.Client.ViewModels;
+﻿using AGJProductInventory.Application.DTOs.ProductInventory;
 
 namespace AGJProductInventory.Client.Services.IServices
 {
     public interface IInventoryService
     {
-        Task<IEnumerable<InventoryViewModel>> GetCurrentInventory();
-        Task<InventoryViewModel> UpdateUnitsAvailable(int id, int adjustment);
-        Task<InventoryViewModel> GetByProductId(int productId);
-        Task<IEnumerable<InventoryViewModel>> GetSnapshotHistory();
+        Task<IEnumerable<ProductInventoryDTO>> GetCurrentInventory();
+        Task<ProductInventoryDTO> UpdateUnitsAvailable(int id, int adjustment);
+        Task<ProductInventoryDTO> GetByProductId(int productId);
+        Task<IEnumerable<ProductInventoryDTO>> GetSnapshotHistory();
     }
 }

@@ -28,7 +28,7 @@ else
     </MudPaper>
 
 
-    <MudTable Items="_productVariations" Striped="true" Hover="true" Dense="true" CanCancelEdit="true" Filter="new Func<ProductVariationViewModel, bool>(FilterFunc)"
+    <MudTable Items="_productVariations" Striped="true" Hover="true" Dense="true" CanCancelEdit="true" Filter="new Func<ProductVariationDTO, bool>(FilterFunc)"
           @bind-SelectedItem="selectedItem1" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
           OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
           RowEditCommit="ItemHasBeenCommitted">
@@ -38,8 +38,8 @@ else
             <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
         <HeaderContent>
-            <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationViewModel, object>(x=>x.Size)">Size</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationViewModel, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationDTO, object>(x=>x.Size)">Size</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<ProductVariationDTO, object>(x=>x.Price)">Price</MudTableSortLabel></MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Size">@context.Size</MudTd>
@@ -63,15 +63,15 @@ else
     [Parameter]
     public int Id { get; set; }
 
-    private ProductViewModel _product { get; set; } = new ProductViewModel();
+    private ProductDTO _product { get; set; } = new ProductDTO();
 
     private List<string> editEvents = new();
     private string searchString = "";
-    private ProductVariationViewModel selectedItem1 = new();
-    private ProductVariationViewModel elementBeforeEdit = new();
-    private HashSet<ProductVariationViewModel> selectedItems1 = new HashSet<ProductVariationViewModel>();
+    private ProductVariationDTO selectedItem1 = new();
+    private ProductVariationDTO elementBeforeEdit = new();
+    private HashSet<ProductVariationDTO> selectedItems1 = new HashSet<ProductVariationDTO>();
 
-    private IEnumerable<ProductVariationViewModel> _productVariations { get; set; } = new List<ProductVariationViewModel>();
+    private IEnumerable<ProductVariationDTO> _productVariations { get; set; } = new List<ProductVariationDTO>();
     private bool _isLoading { get; set; } = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -107,25 +107,25 @@ else
     {
         elementBeforeEdit = new()
             {
-                Size = ((ProductVariationViewModel)variation).Size,
-                Price = ((ProductVariationViewModel)variation).Price
+                Size = ((ProductVariationDTO)variation).Size,
+                Price = ((ProductVariationDTO)variation).Price
             };
-        AddEditionEvent($"RowEditPreview event: made a backup of Element {((ProductVariationViewModel)variation).Size}");
+        AddEditionEvent($"RowEditPreview event: made a backup of Element {((ProductVariationDTO)variation).Size}");
     }
 
     private void ItemHasBeenCommitted(object variation)
     {
-        AddEditionEvent($"RowEditCommit event: Changes to Element {((ProductVariationViewModel)variation).Size} committed");
+        AddEditionEvent($"RowEditCommit event: Changes to Element {((ProductVariationDTO)variation).Size} committed");
     }
 
     private void ResetItemToOriginalValues(object variation)
     {
-        ((ProductVariationViewModel)variation).Size = elementBeforeEdit.Size;
-        ((ProductVariationViewModel)variation).Price = elementBeforeEdit.Price;
-        AddEditionEvent($"RowEditCancel event: Editing of Element {((ProductVariationViewModel)variation).Size} cancelled");
+        ((ProductVariationDTO)variation).Size = elementBeforeEdit.Size;
+        ((ProductVariationDTO)variation).Price = elementBeforeEdit.Price;
+        AddEditionEvent($"RowEditCancel event: Editing of Element {((ProductVariationDTO)variation).Size} cancelled");
     }
 
-    private bool FilterFunc(ProductVariationViewModel variation)
+    private bool FilterFunc(ProductVariationDTO variation)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return true;

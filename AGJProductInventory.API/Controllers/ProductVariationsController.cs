@@ -1,5 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.ProductVariation;
 using AGJProductInventory.Application.Features.ProductVariation.Commands.CreateProductVariationCommand;
 using AGJProductInventory.Application.Features.ProductVariation.Commands.DeleteProductVariationCommand;
 using AGJProductInventory.Application.Features.ProductVariation.Commands.UpdateProductVariationCommand;
@@ -41,7 +41,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<ProductVariationsController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse<ProductVariationDTO>>> Post([FromBody] ProductVariationDTO productVariationDTO)
+        public async Task<ActionResult<BaseCommandResponse<CreateProductVariationDTO>>> Post([FromBody] CreateProductVariationDTO productVariationDTO)
         {
             var command = new CreateProductVariationCommand { ProductVariationDTO = productVariationDTO };
             var response = await _mediator.Send(command);

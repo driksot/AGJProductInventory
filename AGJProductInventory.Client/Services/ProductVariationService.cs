@@ -1,4 +1,5 @@
-﻿using AGJProductInventory.Client.Services.IServices;
+﻿using AGJProductInventory.Application.DTOs.ProductVariation;
+using AGJProductInventory.Client.Services.IServices;
 using AGJProductInventory.Client.Static;
 using AGJProductInventory.Client.ViewModels;
 using Newtonsoft.Json;
@@ -17,15 +18,15 @@ namespace AGJProductInventory.Client.Services
             _variationUrl = APIEndpoints.s_productVariations;
         }
 
-        public async Task<ProductVariationViewModel> Create(ProductVariationViewModel productVariationViewModel)
+        public async Task<ProductVariationDTO> Create(ProductVariationDTO productVariationViewModel)
         {
             var result = await _http.PostAsJsonAsync(_variationUrl, productVariationViewModel);
             var response = await result.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<ProductVariationViewModel>(response);
+            return JsonConvert.DeserializeObject<ProductVariationDTO>(response);
         }
 
-        public Task<ProductVariationViewModel> Delete(ProductVariationViewModel entity)
+        public Task<ProductVariationDTO> Delete(ProductVariationDTO entity)
         {
             throw new NotImplementedException();
         }
@@ -40,14 +41,14 @@ namespace AGJProductInventory.Client.Services
             throw new NotImplementedException();
         }
 
-        public async Task<ProductVariationViewModel> Get(int id)
+        public async Task<ProductVariationDTO> Get(int id)
         {
             var response = await _http.GetAsync(_variationUrl + "/" + id);
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                var variation = JsonConvert.DeserializeObject<ProductVariationViewModel>(content);
+                var variation = JsonConvert.DeserializeObject<ProductVariationDTO>(content);
                 return variation;
             }
             else
@@ -57,14 +58,14 @@ namespace AGJProductInventory.Client.Services
             }
         }
 
-        public async Task<IEnumerable<ProductVariationViewModel>> GetAll(int? id = null)
+        public async Task<IEnumerable<ProductVariationDTO>> GetAll(int? id = null)
         {
             var response = await _http.GetAsync(_variationUrl + $"/product/{id}");
             var content = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                var variations = JsonConvert.DeserializeObject<IEnumerable<ProductVariationViewModel>>(content);
+                var variations = JsonConvert.DeserializeObject<IEnumerable<ProductVariationDTO>>(content);
                 return variations;
             }
             else
@@ -74,7 +75,7 @@ namespace AGJProductInventory.Client.Services
             }
         }
 
-        public Task<ProductVariationViewModel> Update(ProductVariationViewModel entity)
+        public Task<ProductVariationDTO> Update(ProductVariationDTO entity)
         {
             throw new NotImplementedException();
         }

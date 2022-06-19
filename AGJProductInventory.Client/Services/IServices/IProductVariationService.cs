@@ -1,13 +1,13 @@
-﻿using AGJProductInventory.Client.ViewModels;
+﻿using AGJProductInventory.Application.DTOs.ProductVariation;
 
 namespace AGJProductInventory.Client.Services.IServices
 {
     public interface IProductVariationService
     {
-        Task<ProductVariationViewModel> Get(int id);
-        Task<IEnumerable<ProductVariationViewModel>> GetAll(int? id = null);
-        Task<ProductVariationViewModel> Create(ProductVariationViewModel productVariationViewModel);
-        Task<ProductVariationViewModel> Update(ProductVariationViewModel productVariationViewModel);
+        Task<ProductVariationDTO> Get(int id);
+        Task<IEnumerable<ProductVariationDTO>> GetAll(int? id = null);
+        Task<ProductVariationDTO> Create(ProductVariationDTO productVariationViewModel);
+        Task<ProductVariationDTO> Update(ProductVariationDTO productVariationViewModel);
         Task<int> Delete(int id);
     }
 }

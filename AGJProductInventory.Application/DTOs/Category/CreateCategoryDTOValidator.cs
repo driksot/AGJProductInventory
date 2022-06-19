@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace AGJProductInventory.Application.DTOs
+namespace AGJProductInventory.Application.DTOs.Category
 {
-    public class CategoryDTOValidator : AbstractValidator<CategoryDTO>
+    public class CreateCategoryDTOValidator : AbstractValidator<CreateCategoryDTO>
     {
-        public CategoryDTOValidator()
+        public CreateCategoryDTOValidator()
         {
             RuleFor(p => p.Name)
                 .NotEmpty().WithMessage("{PropertyName} is required.")

@@ -9,7 +9,7 @@
 }
 else
 {
-    <MudTable ServerData="@(new Func<TableState, Task<TableData<ProductViewModel>>>(ServerReload))"
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<ProductDTO>>>(ServerReload))"
           Dense="true" Hover="true" Striped="true" Bordered="true" @ref="table">
         <ToolBarContent>
             <MudButton Href="product/new" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface">New Product</MudButton>
@@ -25,9 +25,9 @@ else
             <col />
         </ColGroup>
         <HeaderContent>
-            <MudTh><MudTableSortLabel SortLabel="name_field" T="ProductViewModel">Name</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="category_field" T="ProductViewModel">Category</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="archived_field" T="ProductViewModel">Archived</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="name_field" T="ProductDTO">Name</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="category_field" T="ProductDTO">Category</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="archived_field" T="ProductDTO">Archived</MudTableSortLabel></MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
@@ -57,8 +57,8 @@ else
 
 
 @code {
-    private IEnumerable<ProductViewModel> _products { get; set; } = new List<ProductViewModel>();
-    private MudTable<ProductViewModel> table;
+    private IEnumerable<ProductDTO> _products { get; set; } = new List<ProductDTO>();
+    private MudTable<ProductDTO> table;
     private int totalItems;
     private string searchString = null;
 
@@ -69,9 +69,9 @@ else
         _isLoading = false;
     }
 
-    private async Task<TableData<ProductViewModel>> ServerReload(TableState state)
+    private async Task<TableData<ProductDTO>> ServerReload(TableState state)
     {
-        IEnumerable<ProductViewModel> data = await _productService.GetAll();
+        IEnumerable<ProductDTO> data = await _productService.GetAll();
         await Task.Delay(300);
         data = data.Where(element =>
         {
@@ -100,7 +100,7 @@ else
         }
 
         _products = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
-        return new TableData<ProductViewModel>() { TotalItems = totalItems, Items = _products };
+        return new TableData<ProductDTO>() { TotalItems = totalItems, Items = _products };
     }
 
     private void OnSearch(string text)

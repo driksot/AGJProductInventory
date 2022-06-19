@@ -1,5 +1,5 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.Category;
 using AGJProductInventory.Domain;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -34,14 +34,14 @@ namespace AGJProductInventory.Persistence.Repositories
             return _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryDTO>>(_dbContext.Categories);
         }
 
-        public async Task<CategoryDTO> Create(CategoryDTO categoryDTO)
+        public async Task<CreateCategoryDTO> Create(CreateCategoryDTO categoryDTO)
         {
-            var category = _mapper.Map<CategoryDTO, Category>(categoryDTO);
+            var category = _mapper.Map<CreateCategoryDTO, Category>(categoryDTO);
 
             var addedCategory = _dbContext.Categories.Add(category);
             await _dbContext.SaveChangesAsync();
 
-            return _mapper.Map<Category, CategoryDTO>(addedCategory.Entity);
+            return _mapper.Map<Category, CreateCategoryDTO>(addedCategory.Entity);
         }
 
         public async Task<CategoryDTO> Update(CategoryDTO categoryDTO)

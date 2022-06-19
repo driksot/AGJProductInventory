@@ -1,6 +1,7 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
 using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.ProductVariation;
 using AutoMapper;
 using MediatR;
 

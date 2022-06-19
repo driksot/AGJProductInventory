@@ -1,17 +1,17 @@
 ﻿using AGJProductInventory.Application.Common;
 using AGJProductInventory.Application.Contracts.Persistence;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.Product;
 using AutoMapper;
 using MediatR;
 
 namespace AGJProductInventory.Application.Features.Product.Commands.CreateProductCommand
 {
-    public class CreateProductCommand : IRequest<BaseCommandResponse<ProductDTO>>
+    public class CreateProductCommand : IRequest<BaseCommandResponse<CreateProductDTO>>
     {
-        public ProductDTO ProductDTO { get; set; }
+        public CreateProductDTO ProductDTO { get; set; }
     }
 
-    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, BaseCommandResponse<ProductDTO>>
+    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, BaseCommandResponse<CreateProductDTO>>
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
@@ -27,10 +27,10 @@ namespace AGJProductInventory.Application.Features.Product.Commands.CreateProduc
             _mapper = mapper;
         }
 
-        public async Task<BaseCommandResponse<ProductDTO>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<BaseCommandResponse<CreateProductDTO>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            var response = new BaseCommandResponse<ProductDTO>();
-            var validator = new ProductDTOValidator(_categoryRepository);
+            var response = new BaseCommandResponse<CreateProductDTO>();
+            var validator = new CreateProductDTOValidator(_categoryRepository);
             var validationResult = await validator.ValidateAsync(request.ProductDTO);
 
             if (!validationResult.IsValid)
@@ -45,7 +45,7 @@ namespace AGJProductInventory.Application.Features.Product.Commands.CreateProduc
             var product = await _productRepository.Create(request.ProductDTO);
 
             response.IsSuccess = true;
-            response.Data = _mapper.Map<ProductDTO>(product);
+            response.Data = _mapper.Map<CreateProductDTO>(product);
             response.Time = DateTime.UtcNow;
             response.Message = "Product created successfully.";
             response.Errors = null;

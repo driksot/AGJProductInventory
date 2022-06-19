@@ -4,7 +4,7 @@
 
 <MudText Typo="Typo.h4" Class="card-title fw-bold mb-4" Color="Color.Primary">@($"Category Management".ToUpper())</MudText>
 
-<MudTable ServerData="@(new Func<TableState, Task<TableData<CategoryViewModel>>>(ServerReload))"
+<MudTable ServerData="@(new Func<TableState, Task<TableData<CategoryDTO>>>(ServerReload))"
           Dense="true" Hover="true" Striped="true" Bordered="true" @ref="table">
     <ToolBarContent>
         <MudButton @onclick="@(() => OpenDialog())" DisableElevation Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" IconColor="Color.Surface" Class="ms-2">New Category</MudButton>
@@ -17,7 +17,7 @@
         <col />
     </ColGroup>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="name_field" T="CategoryViewModel">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="name_field" T="CategoryDTO">Name</MudTableSortLabel></MudTh>
         <MudTh>Actions</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -40,16 +40,16 @@
 
 
 @code {
-    private IEnumerable<CategoryViewModel> _categories { get; set; } = new List<CategoryViewModel>();
-    private MudTable<CategoryViewModel> table;
+    private IEnumerable<CategoryDTO> _categories { get; set; } = new List<CategoryDTO>();
+    private MudTable<CategoryDTO> table;
     private int totalItems;
     private string searchString = null;
 
     public bool _isLoading { get; set; }
 
-    private async Task<TableData<CategoryViewModel>> ServerReload(TableState state)
+    private async Task<TableData<CategoryDTO>> ServerReload(TableState state)
     {
-        IEnumerable<CategoryViewModel> data = await _categoryService.GetAll();
+        IEnumerable<CategoryDTO> data = await _categoryService.GetAll();
         await Task.Delay(300);
         data = data.Where(element =>
         {
@@ -66,7 +66,7 @@
         data = data.OrderByDirection(state.SortDirection, o => o.Name);
 
         _categories = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
-        return new TableData<CategoryViewModel>() { TotalItems = totalItems, Items = _categories };
+        return new TableData<CategoryDTO>() { TotalItems = totalItems, Items = _categories };
     }
 
     private void OnSearch(string text)
@@ -83,7 +83,7 @@
             var category = _categories.FirstOrDefault(q => q.Id == id);
             if (category != null)
             {
-                parameters.Add(nameof(AddEditCategoryModal._category), new CategoryViewModel
+                parameters.Add(nameof(AddEditCategoryModal._category), new CategoryDTO
                 {
                     Id = category.Id,
                     Name = category.Name

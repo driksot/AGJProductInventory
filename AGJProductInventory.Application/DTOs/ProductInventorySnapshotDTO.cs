@@ -1,4 +1,6 @@
-﻿namespace AGJProductInventory.Application.DTOs
+﻿using AGJProductInventory.Application.DTOs.Product;
+
+namespace AGJProductInventory.Application.DTOs
 {
     public class ProductInventorySnapshotDTO
     {

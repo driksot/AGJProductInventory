@@ -1,5 +1,6 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
 using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.ProductInventory;
 using AGJProductInventory.Domain;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;

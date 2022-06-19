@@ -1,4 +1,4 @@
-﻿using AGJProductInventory.Application.DTOs;
+﻿using AGJProductInventory.Application.DTOs.ProductVariation;
 
 namespace AGJProductInventory.Application.Contracts.Persistence
 {
@@ -6,7 +6,7 @@ namespace AGJProductInventory.Application.Contracts.Persistence
     {
         public Task<ProductVariationDTO> Get(int id);
         public Task<IEnumerable<ProductVariationDTO>> GetAll(int? id = null);
-        public Task<ProductVariationDTO> Create(ProductVariationDTO productVariationDTO);
+        public Task<CreateProductVariationDTO> Create(CreateProductVariationDTO productVariationDTO);
         public Task<ProductVariationDTO> Update(ProductVariationDTO productVariationDTO);
         public Task<int> Delete(int id);
     }

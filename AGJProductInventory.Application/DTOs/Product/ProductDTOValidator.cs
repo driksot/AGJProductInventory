@@ -1,7 +1,7 @@
 ﻿using AGJProductInventory.Application.Contracts.Persistence;
 using FluentValidation;
 
-namespace AGJProductInventory.Application.DTOs
+namespace AGJProductInventory.Application.DTOs.Product
 {
     public class ProductDTOValidator : AbstractValidator<ProductDTO>
     {
@@ -15,6 +15,14 @@ namespace AGJProductInventory.Application.DTOs
                 .NotEmpty().WithMessage("{PropertyName} is required.")
                 .NotNull()
                 .MaximumLength(50).WithMessage("{PropertyName} must not exceed {ComparisonValue} characters.");
+
+            RuleFor(p => p.Description)
+                .NotEmpty().WithMessage("{PropertyName} is required.")
+                .NotNull()
+                .MaximumLength(255).WithMessage("{PropertyName} must not exceed {ComparisonValue} characters.");
+
+            RuleFor(p => p.ImageUrl)
+                .MaximumLength(100).WithMessage("{PropertyName} must not exceed {ComparisonValue} characters.");
 
             RuleFor(p => p.CategoryId)
                 .GreaterThan(0)

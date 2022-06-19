@@ -1,4 +1,5 @@
 ﻿using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.ProductInventory;
 
 namespace AGJProductInventory.Application.Contracts.Persistence
 {

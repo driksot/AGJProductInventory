@@ -1,5 +1,5 @@
 ﻿using AGJProductInventory.Application.Common;
-using AGJProductInventory.Application.DTOs;
+using AGJProductInventory.Application.DTOs.Category;
 using AGJProductInventory.Application.Features.Category.Commands.CreateCategoryCommand;
 using AGJProductInventory.Application.Features.Category.Commands.DeleteCategoryCommand;
 using AGJProductInventory.Application.Features.Category.Commands.UpdateCategoryCommand;
@@ -42,7 +42,7 @@ namespace AGJProductInventory.API.Controllers
 
         // POST api/<CategoriesController>
         [HttpPost]
-        public async Task<ActionResult<BaseCommandResponse<CategoryDTO>>> Post([FromBody] CategoryDTO categoryDTO)
+        public async Task<ActionResult<BaseCommandResponse<CreateCategoryDTO>>> Post([FromBody] CreateCategoryDTO categoryDTO)
         {
             var command = new CreateCategoryCommand { CategoryDTO = categoryDTO };
             var response = await _mediator.Send(command);
